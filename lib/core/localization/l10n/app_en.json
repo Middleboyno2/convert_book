@@ -1,0 +1,14 @@
+{
+    "app_title": "My Application",
+    "welcome_message": "Welcome to the app",
+    "login": {
+        "username": "Username",
+        "password": "Password",
+        "submit": "Login"
+    },
+    "home": {
+        "title": "Home Page",
+        "welcome": "Hello, {name}!",
+        "language": "Language"
+    }
+}
