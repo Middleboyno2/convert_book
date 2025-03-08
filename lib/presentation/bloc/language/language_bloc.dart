@@ -35,7 +35,7 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
       orElse: () => LanguageCode.en,
     );
 
-    // Lưu cài đặt ngôn ngữ
+    // Lưu cài đặt ngôn ngữ bằng sharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language_code', selectedLanguage.code);
     await prefs.setString('country_code', selectedLanguage.country);

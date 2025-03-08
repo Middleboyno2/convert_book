@@ -10,5 +10,8 @@
         "title": "Home Page",
         "welcome": "Hello, {name}!",
         "language": "Language"
+    },
+    "empty": {
+        "title": "Would you like to create a book of your own?"
     }
 }

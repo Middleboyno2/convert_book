@@ -1,3 +1,4 @@
+import 'package:doantotnghiep/presentation/widgets/empty/empty_book.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/localization/app_localizations.dart';
@@ -21,21 +22,20 @@ class HomePage extends StatelessWidget{
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).translate('home.language'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const LanguageDropdown(),
-            const Divider(),
-            // Các cài đặt khác
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Text(
+            AppLocalizations.of(context).translate('home.language'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const LanguageDropdown(),
+          const SizedBox(height: 8),
+          EmptyBook(),
+          // Các cài đặt khác
+        ],
       ),
     );
   }

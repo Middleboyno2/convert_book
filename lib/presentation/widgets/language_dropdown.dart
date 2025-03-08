@@ -6,7 +6,7 @@ import '../bloc/language/language_event.dart';
 import '../bloc/language/language_state.dart';
 
 class LanguageDropdown extends StatelessWidget {
-  const LanguageDropdown({Key? key}) : super(key: key);
+  const LanguageDropdown({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +21,8 @@ class LanguageDropdown extends StatelessWidget {
 
         return DropdownButton<String>(
           value: currentLanguageCode,
-          icon: const Icon(Icons.language),
+          // icon: const Icon(Icons.language),
           elevation: 16,
-          underline: Container(
-            height: 2,
-            color: Theme.of(context).primaryColor,
-          ),
           onChanged: (String? newValue) {
             if (newValue != null && newValue != currentLanguageCode) {
               // Dispatch event để thay đổi ngôn ngữ
@@ -40,10 +36,16 @@ class LanguageDropdown extends StatelessWidget {
               value: language.code,
               child: Row(
                 children: [
-                  // Tuỳ chọn: thêm cờ quốc gia
-                  // Image.asset('assets/flags/${language.code}.png', width: 24),
-                  // SizedBox(width: 10),
-                  Text(language.name),
+                  Text(
+                    language.name
+                  ),
+                  SizedBox(
+                    width: 10
+                  ),
+                  Image.asset(
+                    'assets/images/language/${language.code}.png',
+                    width: 24
+                  ),
                 ],
               ),
             );

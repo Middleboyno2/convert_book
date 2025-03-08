@@ -38,6 +38,8 @@ dependencies:
   # navigation
   go_router: ^14.8.1
   google_nav_bar: ^5.0.7
+   #layoyt
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +58,7 @@ flutter:
     - assets/images/
     - assets/logo/
     - assets/images/language/
+    - assets/images/empty/
     - lib/core/localization/l10n/app_en.json
     - lib/core/localization/l10n/app_vi.json
   #   - images/a_dot_ham.jpeg

@@ -1,14 +1,17 @@
 {
-  "app_title": "Ứng Dụng Của Tôi",
-  "welcome_message": "Chào mừng đến ứng dụng",
-  "login": {
-    "username": "Tên đăng nhập",
-    "password": "Mật khẩu",
-    "submit": "Đăng nhập"
-  },
-  "home": {
-    "title": "Trang Chủ",
-    "welcome": "Xin chào, {name}!",
-    "language": "Ngôn ngữ"
-  }
+    "app_title": "Ứng Dụng Của Tôi",
+    "welcome_message": "Chào mừng đến ứng dụng",
+    "login": {
+      "username": "Tên đăng nhập",
+      "password": "Mật khẩu",
+      "submit": "Đăng nhập"
+    },
+    "home": {
+      "title": "Trang Chủ",
+      "welcome": "Xin chào, {name}!",
+      "language": "Ngôn ngữ"
+    },
+    "empty": {
+      "title": "Bạn có muốn tự tạo một cuốn sách cho riêng mình không?"
+    }
 }
