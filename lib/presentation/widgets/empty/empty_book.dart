@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../core/constants/resource.dart';
+
 class EmptyBook extends StatelessWidget {
   const EmptyBook({super.key});
 
@@ -10,14 +12,14 @@ class EmptyBook extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      height: ScreenUtil().screenHeight,
+      height: ScreenUtil().screenHeight/3,
       width: ScreenUtil().screenWidth,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            "assets/images/empty/empty_cat.png",
+            R.ASSETS_IMAGE_EMTY_BOOK,
             width: 220,
             height: 220,
             fit: BoxFit.cover,
@@ -27,7 +29,9 @@ class EmptyBook extends StatelessWidget {
           ),
           Text(
             AppLocalizations.of(context).translate("empty.title"),
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+            softWrap: true,
           ),
         ],
       ),

@@ -13,5 +13,8 @@
     },
     "empty": {
         "title": "Would you like to create a book of your own?"
+    },
+    "splash": {
+        "title": "StoryHub"
     }
 }

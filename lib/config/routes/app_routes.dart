@@ -1,9 +1,8 @@
-// ignore_for_file: unused_element
-
-import 'package:doantotnghiep/presentation/pages/home.dart';
+import 'package:doantotnghiep/presentation/pages/library.dart';
+import 'package:doantotnghiep/presentation/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../main.dart';
+
 
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -12,12 +11,12 @@ final GoRouter _router = GoRouter(
   navigatorKey: navigatorKey,
   initialLocation: '/',
   routes: [
-    // GoRoute(
-    //   path: '/',
-    //   builder: (context, state) => const SplashPage(),
-    // ),
     GoRoute(
       path: '/',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/library',
       builder: (context, state) => const HomePage(),
     ),
     // GoRoute(
@@ -68,6 +67,7 @@ final GoRouter _router = GoRouter(
     //   path: '/category',
     //   builder: (context, state) => const CategoryDetail(),
     // ),
+    //
     //
     // GoRoute(
     //   path: '/addaddress',

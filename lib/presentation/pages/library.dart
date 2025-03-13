@@ -10,11 +10,11 @@ class HomePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // Lấy translation không có tham số
-    String title = AppLocalizations.of(context).translate('home.title');
+    String title = AppLocalizations.of(context).translate('library.title');
 
-    // Lấy translation có tham số
+    // vi du: Lấy translation có tham số
     String welcome = AppLocalizations.of(context).translateWithArgs(
-        'home.welcome',
+        'library.welcome',
         args: {'name': 'John Doe'}
     );
 
@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget{
 
         children: [
           Text(
-            AppLocalizations.of(context).translate('home.language'),
+            AppLocalizations.of(context).translate('library.language'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
