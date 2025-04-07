@@ -1,8 +1,11 @@
-import 'package:doantotnghiep/presentation/bloc/language/language_bloc.dart';
-import 'package:doantotnghiep/presentation/bloc/language/language_event.dart';
-import 'package:doantotnghiep/presentation/bloc/language/language_state.dart';
-import 'package:doantotnghiep/presentation/pages/library.dart';
-import 'package:doantotnghiep/presentation/pages/splash.dart';
+import 'package:doantotnghiep/presentation/bloc/auth/auth_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/auth/auth_event.dart';
+import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/reader/reader_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/setting/setting_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/setting/setting_event.dart';
+import 'package:doantotnghiep/presentation/bloc/setting/setting_state.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,9 +16,16 @@ import 'core/localization/app_localizations.dart';
 import 'core/localization/app_localizations_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'firebase_options.dart';
+import 'injection_container.dart' as di;
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // khoi tao firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Khởi tạo dependency injection
+  await di.init();
   runApp(const MyApp());
 }
 
@@ -27,15 +37,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<LanguageBloc>(
-          create: (context) => LanguageBloc()..add(LanguageStartedEvent()),
+        BlocProvider<SettingBloc>(
+          create: (context) => SettingBloc()
+            ..add(LanguageStartedEvent())
+            ..add(ThemeStartedEvent()),
+          //create: (context) => LoginBloc()..add(LoginStartedEvent())
         ),
-        // Các bloc provider khác
+        BlocProvider<AuthBloc>(
+          create: (_) => di.sl<AuthBloc>()..add(AuthCheckRequested()),
+        ),
+        BlocProvider<DocumentBloc>(
+          create: (_) => di.sl<DocumentBloc>(),
+        ),
+        BlocProvider<DocumentReaderBloc>(
+          create: (_) => di.sl<DocumentReaderBloc>(),
+        ),
       ],
 
-
-      child: BlocBuilder<LanguageBloc, LanguageState>(
+      child: BlocBuilder<SettingBloc, SettingState>(
         builder: (context, state) {
+          final isDark = state is SettingLoadedState?
+          state.isDarkMode
+              :
+          false;
           // get size Screen default
           Size screenSize = MediaQuery.of(context).size;
           return ScreenUtilInit(
@@ -54,11 +78,11 @@ class MyApp extends StatelessWidget {
                 // Set the dark theme for dark mode
                 darkTheme: darkTheme,
                 // Use system theme mode
-                themeMode: ThemeMode.system,
-
+                themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
                 routerConfig: router,
-                // setup language
-                locale: state is LanguageChangedState ? state.locale : const Locale('en', 'US'),
+
+                // setup setting
+                locale: state is SettingLoadedState ? state.locale : const Locale('en', 'US'),
                 localizationsDelegates: [
                   AppLocalizationsDelegate(),
                   GlobalMaterialLocalizations.delegate,
@@ -69,7 +93,7 @@ class MyApp extends StatelessWidget {
 
               );
             },
-            child: SplashScreen(),
+
           );
 
         },

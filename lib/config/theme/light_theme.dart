@@ -7,9 +7,6 @@ ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   // Set the brightness to light
   brightness: Brightness.light,
-  // Specify the color scheme seed (primary color)
-  // colorSchemeSeed: Colors.black,
-  // neu co colorschemeseed thi khong dung colorscheme
   // mau cac widget chinh
   primaryColor: Color(0xFF4B39EF),      // Primary color
   // mau hover/active
@@ -22,10 +19,13 @@ ThemeData lightTheme = ThemeData(
 
   // Màu chữ
   textTheme: TextTheme(
-    displayLarge: TextStyle(color: Color(0xFF101213), fontSize: 32, fontWeight: FontWeight.bold),
+    displayLarge: TextStyle(color: Color(0xFF101213), fontSize: 40, fontWeight: FontWeight.w700),
     displayMedium: TextStyle(color: Color(0xFF101213), fontSize: 24, fontWeight: FontWeight.w600),
     bodyLarge: TextStyle(color: Color(0xFF101213), fontSize: 16, fontWeight: FontWeight.normal),
     bodyMedium: TextStyle(color: Color(0xFF57636C), fontSize: 14, fontWeight: FontWeight.normal),
+    titleLarge: TextStyle(color: Color(0xFFFFFFFF), fontSize: 22, fontWeight: FontWeight.bold),
+    titleMedium: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16, fontWeight: FontWeight.bold),
+    titleSmall: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14, fontWeight: FontWeight.bold)
   ),
 
   // Màu accent

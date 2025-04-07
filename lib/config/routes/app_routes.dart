@@ -1,4 +1,12 @@
+import 'package:doantotnghiep/presentation/pages/auth/auth.dart';
+import 'package:doantotnghiep/presentation/pages/auth/forget_password.dart';
+import 'package:doantotnghiep/presentation/pages/auth/register.dart';
+import 'package:doantotnghiep/presentation/pages/local_file.dart';
+import 'package:doantotnghiep/presentation/pages/support.dart';
+import 'package:doantotnghiep/presentation/pages/entrypoint.dart';
 import 'package:doantotnghiep/presentation/pages/library.dart';
+import 'package:doantotnghiep/presentation/pages/auth/login.dart';
+import 'package:doantotnghiep/presentation/pages/setting.dart';
 import 'package:doantotnghiep/presentation/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,29 +24,31 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
-      path: '/library',
-      builder: (context, state) => const HomePage(),
+      path: '/auth',
+      builder: (context, state) => const Auth(),
     ),
-    // GoRoute(
-    //   path: '/home',
-    //   builder: (context, state) => const AppEntryPoint(),
-    // ),
+    GoRoute(
+      path: '/entrypoint',
+      builder: (context, state) => const AppEntryPoint(),
+    ),
     // GoRoute(
     //   path: '/onboarding',
     //   builder: (context, state) => const OnboardingPage(),
     // ),
-    // GoRoute(
-    //   path: '/review',
-    //   builder: (context, state) => const ReviewsPage(),
-    // ),
-    // GoRoute(
-    //   path: '/policy',
-    //   builder: (context, state) => const PolicyPage(),
-    // ),
-    // GoRoute(
-    //   path: '/verification',
-    //   builder: (context, state) => const VerificationPage(),
-    // ),
+    GoRoute(
+      path: '/support',
+      builder: (context, state) => const SupportPage(),
+    ),
+    GoRoute(
+      path: '/setting',
+      builder: (context, state) => const Setting(),
+    ),
+    GoRoute(
+      path: '/storage',
+      builder: (context, state) => const FilePickerPage(
+
+      ),
+    ),
     // GoRoute(
     //   path: '/search',
     //   builder: (context, state) => const CustomSearch(),
@@ -51,14 +61,22 @@ final GoRouter _router = GoRouter(
     //   path: '/orders',
     //   builder: (context, state) => const OrdersPage(),
     // ),
+
+
     // GoRoute(
     //   path: '/login',
-    //   builder: (context, state) => const Auth(),
+    //   builder: (context, state) => const LoginScreen(),
     // ),
     // GoRoute(
     //   path: '/register',
-    //   builder: (context, state) => const RegistrationPage(),
+    //   builder: (context, state) => const RegisterScreen(),
     // ),
+    // GoRoute(
+    //   path: '/forget_pass',
+    //   builder: (context, state) => const ForgetPasswordScreen(),
+    // ),
+
+    
     // GoRoute(
     //   path: '/categories',
     //   builder: (context, state) => const CategoriesPage(),

@@ -25,7 +25,7 @@ class AppLocalizations {
 
   // Phương thức dịch đa cấp
   String translate(String key) {
-    // Hỗ trợ keys lồng nhau như 'login.username'
+    // Hỗ trợ keys lồng nhau như 'auth.username'
     return _getNestedValue(key, _localizedStrings) ?? key;
   }
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../config/colors/kcolor.dart';
 import '../../core/localization/app_localizations.dart';
@@ -32,10 +33,17 @@ class _CircleFrameState extends State<CircleFrameTest> with TickerProviderStateM
   void initState() {
     super.initState();
 
+    // doi 4s chuyen page
+    Future.delayed(
+      Duration(seconds: 4), () {
+        context.go('/entrypoint');
+      }
+    );
+
     // Khởi tạo animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 3),
     )..forward().then((_) {
       // Khi animation hình tròn kết thúc, bắt đầu animation cho text
       _textAnimationController.forward();

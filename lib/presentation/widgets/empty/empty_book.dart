@@ -1,5 +1,7 @@
+import 'package:doantotnghiep/config/colors/kcolor.dart';
 import 'package:doantotnghiep/core/localization/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -12,26 +14,42 @@ class EmptyBook extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      height: ScreenUtil().screenHeight/3,
+      // height: ScreenUtil().screenHeight/3,
       width: ScreenUtil().screenWidth,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            R.ASSETS_IMAGE_EMTY_BOOK,
-            width: 220,
-            height: 220,
-            fit: BoxFit.cover,
-          ),
           SizedBox(
-            height: 20,
+            child: Image.asset(
+              R.ASSETS_IMAGE_EMTY_BOOK,
+              width: ScreenUtil().screenWidth,
+              fit: BoxFit.cover,
+            ),
           ),
-          Text(
-            AppLocalizations.of(context).translate("empty.title"),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-            softWrap: true,
+
+
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: AppLocalizations.of(context).translate("empty.title"),
+                    style: Theme.of(context).textTheme.labelLarge
+                  ),
+                  TextSpan(
+                    text: AppLocalizations.of(context).translate("empty.title_2"),
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Kolors.kPrimary),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = (){
+
+                      }
+                  )
+                ]
+              )
+            ),
           ),
         ],
       ),

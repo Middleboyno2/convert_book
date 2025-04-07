@@ -9,15 +9,18 @@ ThemeData darkTheme = ThemeData(
   primaryColorDark: Color(0xFF2D1FE1),   // Dark variant
 
   // Màu nền
-  scaffoldBackgroundColor: Color(0xFF1A1A1A),
+  scaffoldBackgroundColor: Color(0xFF2A2A2C),
   canvasColor: Color(0xFF252525),
 
   // Màu chữ
   textTheme: TextTheme(
-    displayLarge: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+    displayLarge: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w700),
     displayMedium: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
     bodyLarge: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.normal),
     bodyMedium: TextStyle(color: Color(0xFFBBBBBB), fontSize: 14, fontWeight: FontWeight.normal),
+    titleLarge: TextStyle(color: Color(0xFFFFFFFF), fontSize: 22, fontWeight: FontWeight.bold),
+    titleMedium: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16, fontWeight: FontWeight.bold),
+    titleSmall: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14, fontWeight: FontWeight.bold)
   ),
 
   // Màu accent

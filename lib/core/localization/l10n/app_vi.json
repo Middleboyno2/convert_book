@@ -1,20 +1,65 @@
 {
-    "app_title": "Ứng Dụng Của Tôi",
-    "welcome_message": "Chào mừng đến ứng dụng",
-    "login": {
-      "username": "Tên đăng nhập",
-      "password": "Mật khẩu",
-      "submit": "Đăng nhập"
+    "app_title": "StoryHub",
+    "welcome_message": "Chào mừng {name} đến với ứng dụng của tôi",
+    "auth": {
+        "title": "ĐĂNG NHẬP",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "forget": "Quên mật khẩu",
+        "question": "Bạn đã có tài khoản chưa ?",
+        "register": "đăng ký",
+        "submit": "Đăng nhập",
+        "google": "Đăng nhập bằng google",
+        "apple": "Đăng nhập bằng apple"
     },
-    "home": {
-      "title": "Trang Chủ",
-      "welcome": "Xin chào, {name}!",
-      "language": "Ngôn ngữ"
+    "register": {
+        "title": "ĐĂNG KÝ",
+        "name": "Họ tên",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "password": "Mật khẩu",
+        "confirm" : "Xác nhận mật khẩu",
+        "forget": "Quên mật khẩu",
+        "submit": "Đăng ký",
+        "google": "Đăng ký với google",
+        "apple": "Đăng ký với apple"
+    },
+    "library": {
+        "title": "Thư viện",
+        "welcome": "Xin chào, {name}!",
+        "language": "Ngôn ngữ",
+        "question": "Bạn có muốn thử chuyển đổi cuốn sách đầu tiên của mình không?"
+    },
+    "search": {
+        "search": "Tìm kiếm..."
+    },
+    "tabbar": {
+        "unread": "đã đọc",
+        "completed": "hoàn thành"
     },
     "empty": {
-      "title": "Bạn có muốn tự tạo một cuốn sách cho riêng mình không?"
+        "title": "Bạn có muốn tự tạo một cuốn sách cho riêng mình không?",
+        "title_2": "Bấm vào đây"
     },
-  "splash": {
-    "title": "StoryHub"
-  }
+    "community": {
+        "": ""
+    },
+    "navigation": {
+        "lib": "thư viện",
+        "community": "cộng đồng",
+        "profile": "hồ sơ"
+    },
+
+    "splash": {
+        "title": "StoryHub"
+    },
+    "exception": {
+        "email_already_in_use": "Email này đã được sử dụng",
+        "invalid_email": "Email không hợp lệ",
+        "weak_pass": "Mật khẩu quá yếu",
+        "user_not_found": "Không tìm thấy tài khoản với email này",
+        "wrong_pass": "Mật khẩu không đúng",
+        "user_disabled": "Tài khoản đã bị vô hiệu hóa",
+        "network": "Không có kết nối mạng"
+    }
 }

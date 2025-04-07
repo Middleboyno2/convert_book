@@ -1,20 +1,69 @@
 {
     "app_title": "My Application",
-    "welcome_message": "Welcome to the app",
-    "login": {
-        "username": "Username",
+    "welcome_message": "Welcome {name} to my app",
+    "auth": {
+        "title": "LOGIN",
+        "email": "Email",
         "password": "Password",
-        "submit": "Login"
+        "forget": "forget password",
+        "question": "Do you have an account yet?",
+        "register": "register",
+        "submit": "Login",
+        "google": "Sign in with google",
+        "apple": "Sign in with apple"
     },
-    "home": {
-        "title": "Home Page",
-        "welcome": "Hello, {name}!",
-        "language": "Language"
+    "register": {
+        "title": "REGISTER",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Password",
+        "confirm" : "Confirm Password",
+        "forget": "forget password",
+        "submit": "Register",
+        "google": "Sign up with google",
+        "apple": "Sign up with apple"
+    },
+    "library": {
+        "title": "Library",
+        "welcome": "Hi, {name}!",
+        "language": "Language",
+        "question": "Want to try converting your first book?"
+    },
+    "search": {
+        "search": "Search..."
+    },
+    "tabbar": {
+        "unread": "unread",
+        "completed": "completed"
     },
     "empty": {
-        "title": "Would you like to create a book of your own?"
+        "title": "Would you like to create a book of your own?",
+        "title_2": "Click here"
+    },
+    "community": {
+        "": ""
+    },
+    "profile": {
+        "account": "account",
+        "setting": "setting",
+        "support": "support"
+    },
+    "navigation": {
+        "lib": "library",
+        "community": "cummunity",
+        "profile": "profile"
     },
     "splash": {
         "title": "StoryHub"
+    },
+    "exception": {
+        "email_already_in_use": "Email already in use",
+        "invalid_email": "Invalid email",
+        "weak_pass": "Weak Password",
+        "user_not_found": "User not found",
+        "wrong_pass": "Wrong password",
+        "user_disabled": "User disabled",
+        "network": "No internet"
     }
 }

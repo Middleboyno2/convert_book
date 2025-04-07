@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1096635672067",
+    "project_id": "convertbo",
+    "storage_bucket": "convertbo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1096635672067:android:9bc594f828a0dc8f6a1036",
+        "android_client_info": {
+          "package_name": "com.hvloi.doantotnghiep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1096635672067-728ph686js81h2vqe6kvsetuklh2tfks.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hvloi.doantotnghiep",
+            "certificate_hash": "078bd179d066a45be60d92cfab0fd5598bce2ae4"
+          }
+        },
+        {
+          "client_id": "1096635672067-9ccemkppn3v13403u9s7jvtrqdtkmasu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5LidRsnkoQO8x6EaMtjXowjUvQk2JR5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1096635672067-9ccemkppn3v13403u9s7jvtrqdtkmasu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1096635672067-1utht3p8ckla31ah3buglp3jmahr490b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hvloi.doantotnghiep"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
