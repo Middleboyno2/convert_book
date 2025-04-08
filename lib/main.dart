@@ -5,6 +5,7 @@ import 'package:doantotnghiep/presentation/bloc/reader/reader_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_event.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_state.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Khởi tạo dependency injection
   await di.init();
+  // App Check với debug provider (dùng khi dev)
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.debug,
+  );
   runApp(const MyApp());
 }
 

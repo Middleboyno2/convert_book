@@ -1,6 +1,7 @@
 import 'package:doantotnghiep/presentation/pages/auth/auth.dart';
 import 'package:doantotnghiep/presentation/pages/auth/forget_password.dart';
 import 'package:doantotnghiep/presentation/pages/auth/register.dart';
+import 'package:doantotnghiep/presentation/pages/document_reader.dart';
 import 'package:doantotnghiep/presentation/pages/local_file.dart';
 import 'package:doantotnghiep/presentation/pages/support.dart';
 import 'package:doantotnghiep/presentation/pages/entrypoint.dart';
@@ -48,6 +49,13 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const FilePickerPage(
 
       ),
+    ),
+    GoRoute(
+      path: '/reader/:id',
+      builder: (BuildContext context, GoRouterState state) {
+        final documentId = state.pathParameters['id'];
+        return DocumentReaderPage(documentId: documentId.toString());
+      },
     ),
     // GoRoute(
     //   path: '/search',

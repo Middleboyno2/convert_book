@@ -71,5 +71,24 @@ class DocumentCategoryUpdated extends DocumentState {
   List<Object?> get props => [document];
 }
 
+// Thêm trạng thái này
+class ReadingProgressUpdated extends DocumentState {
+  final DocumentEntity document;
+
+  const ReadingProgressUpdated(this.document);
+
+  @override
+  List<Object?> get props => [document];
+}
+
+class DocumentCoverUpdated extends DocumentState {
+  final DocumentEntity document;
+
+  const DocumentCoverUpdated(this.document);
+
+  @override
+  List<Object?> get props => [document];
+}
+
 // Thêm state mới cho yêu cầu xác thực
 class DocumentAuthenticationRequired extends DocumentState {}

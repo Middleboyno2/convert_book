@@ -8,7 +8,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/constants/resource.dart';
 
 class EmptyBook extends StatelessWidget {
-  const EmptyBook({super.key});
+  final String title;
+  final String buttonText;
+  final VoidCallback onPressed;
+  const EmptyBook({super.key, required this.title, required this.buttonText, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +39,15 @@ class EmptyBook extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: AppLocalizations.of(context).translate("empty.title"),
+                    text: title,
                     style: Theme.of(context).textTheme.labelLarge
                   ),
                   TextSpan(
-                    text: AppLocalizations.of(context).translate("empty.title_2"),
+                    text: buttonText,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Kolors.kPrimary),
                     recognizer: TapGestureRecognizer()
                       ..onTap = (){
-
+                        onPressed();
                       }
                   )
                 ]

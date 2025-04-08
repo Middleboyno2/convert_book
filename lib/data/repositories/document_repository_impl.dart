@@ -12,7 +12,6 @@ import '../../domain/entities/document_entity.dart';
 import '../../domain/repositories/document_repository.dart';
 import '../datasources/local/document_local_datasource.dart';
 import '../datasources/remote/document_remote_datasource.dart';
-import '../models/document_model.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
   final DocumentRemoteDataSource remoteDataSource;
@@ -119,28 +118,68 @@ class DocumentRepositoryImpl implements DocumentRepository {
     }
   }
 
-  // @override
-  // Future<Either<Failure, DocumentEntity>> updateDocumentCategory(String id, Category category) async {
-  //   if (await networkInfo.isConnected) {
-  //     try {
-  //       // Lấy document hiện tại
-  //       final document = await remoteDataSource.getDocumentById(id);
-  //
-  //       // Cập nhật category trong Firestore
-  //       await remoteDataSource.updateDocumentCategory(id, category);
-  //
-  //       // Trả về document đã cập nhật
-  //       final updatedDocument = await remoteDataSource.getDocumentById(id);
-  //       return Right(updatedDocument);
-  //     } on ServerException {
-  //       return Left(ServerFailure());
-  //     } on NotFoundException {
-  //       return Left(NotFoundFailure());
-  //     } on NotAuthenticatedException {
-  //       return Left(NotAuthenticatedFailure());
-  //     }
-  //   } else {
-  //     return Left(NetworkFailure());
-  //   }
-  // }
+
+  @override
+  Future<Either<Failure, DocumentEntity>> updateReadingProgress(
+      String id, double progress, int? lastPage, String? lastPosition) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final updatedDocument = await remoteDataSource.updateReadingProgress(
+            id, progress, lastPage, lastPosition);
+        return Right(updatedDocument);
+      } on ServerException {
+        return Left(ServerFailure());
+      } on NotFoundException {
+        return Left(NotFoundFailure());
+      } on NotAuthenticatedException {
+        return Left(NotAuthenticatedFailure());
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, DocumentEntity>> updateDocumentCover(String id, File coverFile) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final updatedDocument = await remoteDataSource.updateDocumentCover(id, coverFile);
+        return Right(updatedDocument);
+      } on ServerException {
+        return Left(ServerFailure());
+      } on NotFoundException {
+        return Left(NotFoundFailure());
+      } on NotAuthenticatedException {
+        return Left(NotAuthenticatedFailure());
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, DocumentEntity>> updateDocumentCategory(String id, Category category) async {
+    if (await networkInfo.isConnected) {
+      try {
+        // Lấy document hiện tại
+        final document = await remoteDataSource.getDocumentById(id);
+
+        // Cập nhật category trong Firestore
+        await remoteDataSource.updateDocumentCategory(id, category);
+
+        // Trả về document đã cập nhật
+        final updatedDocument = await remoteDataSource.getDocumentById(id);
+        return Right(updatedDocument);
+      } on ServerException {
+        return Left(ServerFailure());
+      } on NotFoundException {
+        return Left(NotFoundFailure());
+      } on NotAuthenticatedException {
+        return Left(NotAuthenticatedFailure());
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
 }

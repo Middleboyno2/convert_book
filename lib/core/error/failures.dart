@@ -78,3 +78,6 @@ class NotAuthenticatedFailure extends Failure {
 class StorageFailure extends Failure {
   const StorageFailure([super.message = 'loi j day']);
 }
+
+class CoverUpdateFailure extends Failure{
+}

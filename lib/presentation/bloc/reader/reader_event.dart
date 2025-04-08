@@ -11,11 +11,12 @@ abstract class DocumentReaderEvent extends Equatable {
 
 class LoadDocumentEvent extends DocumentReaderEvent {
   final DocumentEntity document;
+  final bool isOnline;
 
-  const LoadDocumentEvent(this.document);
+  const LoadDocumentEvent(this.document, {this.isOnline = true});
 
   @override
-  List<Object?> get props => [document];
+  List<Object?> get props => [document, isOnline];
 }
 
 class SaveReadingProgressEvent extends DocumentReaderEvent {

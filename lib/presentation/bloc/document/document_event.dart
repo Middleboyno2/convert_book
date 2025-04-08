@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../core/utils/enums.dart';
+
 abstract class DocumentEvent extends Equatable {
   const DocumentEvent();
 
@@ -51,4 +53,48 @@ class GetDownloadUrlEvent extends DocumentEvent {
 
   @override
   List<Object?> get props => [filePath];
+}
+
+class UpdateDocumentCategoryEvent extends DocumentEvent {
+  final String id;
+  final Category newCategory;
+
+  const UpdateDocumentCategoryEvent({
+    required this.id,
+    required this.newCategory,
+  });
+
+  @override
+  List<Object?> get props => [id, newCategory];
+}
+
+// Thêm sự kiện này
+class UpdateReadingProgressEvent extends DocumentEvent {
+  final String id;
+  final double progress;
+  final int? lastPage;
+  final String? lastPosition;
+
+  const UpdateReadingProgressEvent({
+    required this.id,
+    required this.progress,
+    this.lastPage,
+    this.lastPosition,
+  });
+
+  @override
+  List<Object?> get props => [id, progress, lastPage, lastPosition];
+}
+
+class UpdateDocumentCoverEvent extends DocumentEvent {
+  final String id;
+  final File coverFile;
+
+  const UpdateDocumentCoverEvent({
+    required this.id,
+    required this.coverFile,
+  });
+
+  @override
+  List<Object> get props => [id, coverFile];
 }

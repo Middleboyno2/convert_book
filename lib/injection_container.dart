@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doantotnghiep/domain/usecases/document/delete_document_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/update_document_category_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/update_document_cover_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/update_reading_progress_usecase.dart';
 import 'package:doantotnghiep/presentation/bloc/auth/auth_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_event.dart';
@@ -58,6 +61,9 @@ Future<void> init() async {
       getDownloadUrl: sl(),
       deleteDocument: sl(),
       authBloc: sl(),
+      updateDocumentCategory: sl(),
+      updateReadingProgress: sl(),
+      updateDocumentCover: sl(),
     ),
   );
 
@@ -84,6 +90,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UploadDocumentUseCase(sl()));
   sl.registerLazySingleton(() => GetDownloadUrlUseCase(sl()));
   sl.registerLazySingleton(() => DeleteDocumentUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateDocumentCategoryUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateReadingProgressUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateDocumentCoverUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(

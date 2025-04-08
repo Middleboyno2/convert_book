@@ -1,30 +1,55 @@
-import 'package:doantotnghiep/presentation/widgets/empty/empty_book.dart';
-import 'package:doantotnghiep/presentation/widgets/reader/cardBook.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../core/utils/enums.dart';
+import '../../../domain/entities/document_entity.dart';
+import '../empty/empty_book.dart';
+import '../reader/cardBook.dart';
 
 class CompletedBook extends StatelessWidget {
-  const CompletedBook({super.key});
+  final List<DocumentEntity> documents;
+
+  const CompletedBook({
+    Key? key,
+    required this.documents,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Hiển thị 2 cột
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        childAspectRatio: 0.7
-      ),
-      itemCount: 5,
-      itemBuilder: (context, index){
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CardBook(imageUrl: '', progress: '',),
-            Text('$index'),
-          ],
-        );
-      }
-    );
+    // Lọc sách theo category Completed
+    final completedBooks = documents
+        .where((document) => document.category == Category.completed)
+        .toList();
 
+    if (completedBooks.isEmpty) {
+      return EmptyBook(
+        title: 'Không có sách nào đã hoàn thành',
+        buttonText: 'Xem sách chưa đọc',
+        onPressed: () {
+          DefaultTabController.of(context).animateTo(0);
+        },
+      );
+    }
+
+    return GridView.builder(
+      padding: EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: completedBooks.length,
+      itemBuilder: (context, index) {
+        final document = completedBooks[index];
+        return BookCard(
+          document: document,
+          onTap: () {
+            // Điều hướng đến trang đọc với document ID
+            context.push('/reader/${document.id}');
+          },
+        );
+      },
+    );
   }
 }

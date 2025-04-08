@@ -7,12 +7,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
-import 'package:uuid/uuid.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import '../../../core/error/exceptions.dart';
 import '../../../core/utils/enums.dart';
 import '../../../core/utils/firebase_storage_helper.dart';
-import '../../../domain/entities/document_entity.dart';
 import '../../models/document_model.dart';
 
 abstract class DocumentRemoteDataSource {
@@ -23,6 +23,8 @@ abstract class DocumentRemoteDataSource {
   Future<String> getDownloadUrl(String filePath);
   Future<bool> isAuthenticated();
   Future<DocumentModel> updateDocumentCategory(String id, Category category);
+  Future<DocumentModel> updateReadingProgress(String id, double progress, int? lastPage, String? lastPosition);
+  Future<DocumentModel> updateDocumentCover(String id, File coverFile);
 }
 
 class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
@@ -98,6 +100,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     }
   }
 
+  // lib/data/datasources/remote/document_remote_datasource.dart
+
   @override
   Future<DocumentModel> uploadDocument(File file, String title, {String? author}) async {
     try {
@@ -106,8 +110,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         throw NotAuthenticatedException();
       }
 
-      final fileName = path.basename(file.path);
-      final fileExtension = path.extension(fileName).toLowerCase();
+      final String fileName = path.basename(file.path);
+      final String fileExtension = path.extension(fileName).toLowerCase();
 
       // Kiểm tra loại file
       DocumentType docType;
@@ -119,8 +123,17 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         throw UnsupportedFileException();
       }
 
-      // Tải file lên Firebase Storage bằng helper
-      final storagePath = await storageHelper.uploadDocument(file);
+      // Tải file lên Firebase Storage
+      final String storagePath = await storageHelper.uploadDocument(file);
+
+      // Trích xuất ảnh bìa (nếu có thể)
+      String? coverUrl;
+      try {
+        coverUrl = await extractBookCover(file, docType);
+      } catch (e) {
+        print('Error extracting book cover: $e');
+        // Tiếp tục mà không có ảnh bìa nếu có lỗi
+      }
 
       // Tạo bản ghi tài liệu trong Firestore
       final docData = {
@@ -131,13 +144,15 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         'category': Category.unread.toString().split('.').last,
         'userId': userId,
         'author': author,
+        'coverUrl': coverUrl,
+        'readingProgress': 0.0, // Mặc định là 0%
+        'lastReadTime': DateTime.now().toIso8601String(),
       };
 
       final docRef = await firestore.collection('documents').add(docData);
 
       return DocumentModel.fromJson({...docData, 'id': docRef.id});
     } catch (e) {
-      debugPrint('Error uploading document: $e');
       if (e is UnsupportedFileException || e is NotAuthenticatedException) {
         throw e;
       }
@@ -205,19 +220,16 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!await isAuthenticated()) {
         throw NotAuthenticatedException();
       }
-
       // Lấy document hiện tại
       final documentSnapshot = await firestore.collection('documents').doc(id).get();
 
       if (!documentSnapshot.exists) {
         throw NotFoundException();
       }
-
       // Cập nhật category
       await firestore.collection('documents').doc(id).update({
         'category': category.toString().split('.').last,
       });
-
       // Lấy document đã cập nhật
       final updatedSnapshot = await firestore.collection('documents').doc(id).get();
 
@@ -228,6 +240,157 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         throw e;
       }
       throw ServerException();
+    }
+  }
+
+  @override
+  Future<DocumentModel> updateReadingProgress(String id, double progress, int? lastPage, String? lastPosition) async {
+    try {
+      // Kiểm tra xác thực
+      if (!await isAuthenticated()) {
+        throw NotAuthenticatedException();
+      }
+
+      // Lấy document hiện tại
+      final documentSnapshot = await firestore.collection('documents').doc(id).get();
+
+      if (!documentSnapshot.exists) {
+        throw NotFoundException();
+      }
+
+      // Cập nhật tiến độ đọc và thời gian
+      final updatedData = {
+        'readingProgress': progress,
+        'lastReadTime': DateTime.now().toIso8601String(),
+      };
+
+      // Thêm trang đọc cuối nếu có
+      if (lastPage != null) {
+        updatedData['lastReadPage'] = lastPage;
+      }
+
+      // Thêm vị trí đọc cuối nếu có
+      if (lastPosition != null) {
+        updatedData['lastReadPosition'] = lastPosition;
+      }
+
+      // Nếu tiến độ đọc lớn hơn 80%, tự động cập nhật category sang completed
+      if (progress > 0.8) {
+        updatedData['category'] = Category.completed.toString().split('.').last;
+      }
+
+      // Cập nhật document
+      await firestore.collection('documents').doc(id).update(updatedData);
+
+      // Lấy lại document đã cập nhật
+      final updatedSnapshot = await firestore.collection('documents').doc(id).get();
+
+      return DocumentModel.fromJson({...updatedSnapshot.data()!, 'id': updatedSnapshot.id});
+    } catch (e) {
+      if (e is NotFoundException || e is NotAuthenticatedException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<DocumentModel> updateDocumentCover(String id, File coverFile) async {
+    try {
+      // Kiểm tra xác thực
+      if (!await isAuthenticated()) {
+        throw NotAuthenticatedException();
+      }
+      final FirebaseStorage storage = FirebaseStorage.instance;
+
+      // Lấy document hiện tại để kiểm tra
+      final documentSnapshot = await firestore.collection('documents').doc(id).get();
+
+      if (!documentSnapshot.exists) {
+        throw NotFoundException();
+      }
+
+      // Tải ảnh bìa lên Firebase Storage
+      final coverFileName = path.basename(coverFile.path);
+      final coverStoragePath = 'covers/$userId/${id}_$coverFileName';
+      final storageRef = storage.ref().child(coverStoragePath);
+
+      // Tải file lên
+      await storageRef.putFile(coverFile);
+
+      // Lấy URL download
+      final coverUrl = await storageRef.getDownloadURL();
+
+      // Cập nhật document với URL ảnh bìa mới
+      await firestore.collection('documents').doc(id).update({
+        'coverUrl': coverUrl,
+      });
+
+      // Lấy lại document đã cập nhật
+      final updatedSnapshot = await firestore.collection('documents').doc(id).get();
+
+      return DocumentModel.fromJson({...updatedSnapshot.data()!, 'id': updatedSnapshot.id});
+    } catch (e) {
+      if (e is NotFoundException || e is NotAuthenticatedException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  Future<String?> extractBookCover(File file, DocumentType type) async {
+    try {
+      final FirebaseStorage storage = FirebaseStorage.instance;
+
+      if (type == DocumentType.pdf) {
+        // Cách tiếp cận khác với PDF - sử dụng package mạnh hơn
+        final tempDir = await getTemporaryDirectory();
+        final tempPath = '${tempDir.path}/cover_${DateTime.now().millisecondsSinceEpoch}.png';
+        final coverFile = File(tempPath);
+
+        // Có thể sử dụng ProcessRunner để chạy lệnh pdftoppm, nhưng không phải giải pháp tốt
+        // Cách đơn giản nhất là chỉ tải file lên mà không trích xuất bìa
+
+        // Tạo một placeholder image đơn giản
+        final pdf = pw.Document();
+        pdf.addPage(
+          pw.Page(
+            build: (pw.Context context) {
+              return pw.Center(
+                child: pw.Text('PDF Cover', style: pw.TextStyle(fontSize: 40)),
+              );
+            },
+          ),
+        );
+
+        final bytes = await pdf.save();
+        await coverFile.writeAsBytes(bytes);
+
+        // Tải ảnh lên Firebase Storage
+        final coverStoragePath = 'covers/$userId/${path.basename(file.path)}_cover.png';
+        final storageRef = storage.ref().child(coverStoragePath);
+
+        await storageRef.putFile(coverFile);
+
+        // Lấy URL download
+        final coverUrl = await storageRef.getDownloadURL();
+
+        // Xóa file tạm
+        await coverFile.delete();
+
+        return coverUrl;
+
+      } else if (type == DocumentType.epub) {
+        // Sử dụng package epubx để đọc dữ liệu EPUB
+        // Lưu ý: Việc này khá phức tạp và đòi hỏi nhiều công việc
+        // Tạm thời trả về null
+        return null;
+      }
+
+      return null;
+    } catch (e) {
+      print('Error extracting cover: $e');
+      return null;
     }
   }
 }
