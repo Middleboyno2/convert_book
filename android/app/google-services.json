@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1096635672067",
+    "firebase_url": "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "convertbo",
     "storage_bucket": "convertbo.firebasestorage.app"
   },

@@ -1,12 +1,8 @@
-// lib/presentation/pages/document_reader.dart
-
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epub_view/epub_view.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:go_router/go_router.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +16,8 @@ import '../bloc/document/document_state.dart';
 import '../bloc/reader/reader_bloc.dart';
 import '../bloc/reader/reader_event.dart';
 import '../bloc/reader/reader_state.dart';
+import '../widgets/custom_reader/custom_epub_reader.dart';
+import '../widgets/custom_reader/custom_pdf_reader.dart';
 
 
 class DocumentReaderPage extends StatefulWidget {
@@ -35,7 +33,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   EpubController? _epubController;
   int? _totalPdfPages;
   int _currentPdfPage = 0;
-  PDFViewController? _pdfViewController;
   bool _isLoading = true;
   DocumentEntity? _document;
   late DocumentBloc _documentBloc;
@@ -83,11 +80,11 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   @override
   void dispose() {
     // Lưu tiến độ đọc trước khi dispose
-    _saveReadingProgressSafely();
+    //_saveReadingProgressSafely();
 
     // Giải phóng tài nguyên
-    // _epubController?.dispose();
-    _connectivitySubscription?.cancel();
+    //_epubController?.dispose();
+    //_connectivitySubscription?.cancel();
     super.dispose();
   }
   void _loadDocument() {
@@ -95,7 +92,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   }
   void _loadDocumentContent() {
     if (_document == null) return;
-
     // Tải file từ Firebase Storage hoặc từ bộ nhớ cục bộ tùy thuộc vào kết nối
     context.read<DocumentReaderBloc>().add(
       LoadDocumentEvent(_document!, isOnline: _isOnline),
@@ -118,11 +114,8 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         } else if (_document!.type == DocumentType.epub) {
           if (_epubController != null) {
             try {
-              // Lấy tiến độ đọc từ epubController
               final cfi = _epubController!.generateEpubCfi();
               if (cfi != null) {
-                // Đây chỉ là giá trị giả định - cần thêm logic để tính chính xác
-                progress = 0.5;
                 currentPosition = cfi;
               }
             } catch (e) {
@@ -172,7 +165,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         'progress': progress,
         'lastPage': lastPage,
         'lastPosition': lastPosition,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'timestamp': DateTime.now(),
       };
 
       await prefs.setString(key, progressData.toString());
@@ -193,11 +186,9 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         return;
       }
     }
-
     _lastProgressUpdate = now;
     _saveReadingProgressSafely();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +210,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
           ),
         ],
       ),
-      drawer: _document?.type == DocumentType.epub ? _buildTableOfContentsDrawer() : null,
+      // drawer: _document?.type == DocumentType.epub ? _buildTableOfContentsDrawer() : null,
       body: BlocConsumer<DocumentBloc, DocumentState>(
         listener: (context, state) {
           if (state is DocumentLoaded) {
@@ -227,7 +218,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
             setState(() {
               _isLoading = false;
             });
-
             // Tải nội dung file
             _loadDocumentContent();
           } else if (state is DocumentError) {
@@ -265,7 +255,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
           return Center(child: CircularProgressIndicator());
         },
       ),
-      bottomNavigationBar: _document?.type == DocumentType.pdf ? _buildPdfNavigationBar() : null,
     );
   }
 
@@ -305,94 +294,34 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
     final document = state.document;
     final file = state.file;
 
-    // Kiểm tra file tồn tại
-    if (!file.existsSync()) {
-      throw Exception('File không tồn tại: ${file.path}');
-    }
-
-    if (document.type == DocumentType.epub) {
-      return _buildEpubReader(file.path, document.lastReadPosition);
-    } else {
-      return _buildPdfReader(file.path, document.lastReadPage);
-    }
-  }
-
-  Widget _buildEpubReader(String filePath, String? lastPosition) {
     try {
-      print('Đang mở file EPUB từ: $filePath');
-      _epubController ??= EpubController(
-        document: EpubDocument.openFile(File(filePath)),
-        epubCfi: lastPosition,
-      );
-      return EpubView(
-        controller: _epubController!,
-        builders: EpubViewBuilders<DefaultBuilderOptions>(
-          options: const DefaultBuilderOptions(),
-          chapterDividerBuilder: (_) => const Divider(),
-        ),
-      );
-    } catch (e) {
-      print('Lỗi EPUB: $e');
-      return Center(
-        child: Text(
-          'Không thể đọc file EPUB.\nLỗi: ${e.toString()}',
-          style: TextStyle(color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-  }
+      print('Đang xây dựng trình đọc cho file: ${file.path}');
 
+      if (file.existsSync()) {
+        print('File tồn tại với kích thước: ${file.lengthSync()} bytes');
+      } else {
+        print('File không tồn tại: ${file.path}');
+        return _buildErrorView('File không tồn tại: ${file.path}');
+      }
 
-  Widget _buildPdfReader(String filePath, int? initialPage) {
-    try {
-      return PDFView(
-        filePath: filePath,
-        autoSpacing: true,
-        pageSnap: true,
-        swipeHorizontal: true,
-        nightMode: false,
-        onViewCreated: (PDFViewController controller) {
-          setState(() {
-            _pdfViewController = controller;
-          });
+      print('Loại tài liệu: ${document.type}');
 
-          if (initialPage != null) {
-            controller.setPage(initialPage);
-          }
-        },
-        onRender: (pages) {
-          setState(() {
-            _totalPdfPages = pages;
-            if (initialPage != null) {
-              _currentPdfPage = initialPage;
-            }
-          });
-        },
-        onPageChanged: (page, total) {
-          if (page != null) {
-            setState(() {
-              _currentPdfPage = page;
-            });
-
-            // Cập nhật tiến độ khi thay đổi trang
-            _updateReadingProgress();
-          }
-        },
-        onError: (error) {
-          print('PDF Error: $error');
-        },
-        defaultPage: initialPage ?? 0,
-      );
-    } catch (e) {
-      print('Error building PDF reader: $e');
-      return Center(
-        child: Text(
-          'Không thể đọc file PDF.\nLỗi: ${e.toString()}',
-          style: TextStyle(color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-      );
+      // Sử dụng trình đọc phù hợp dựa trên loại file
+      if (document.type == DocumentType.epub) {
+        return CustomEpubReader(
+          file: file,
+          lastPosition: document.lastReadPosition,
+        );
+      } else {
+        return CustomPdfReader(
+          file: file,
+          initialPage: document.lastReadPage ?? 0,
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Lỗi khi xây dựng trình đọc: $e');
+      print('Stack trace: $stackTrace');
+      return _buildErrorView('Lỗi khi hiển thị tài liệu: ${e.toString()}');
     }
   }
 
@@ -424,43 +353,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
               child: EpubViewTableOfContents(
                 controller: _epubController!,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget? _buildPdfNavigationBar() {
-    if (_document?.type != DocumentType.pdf || _totalPdfPages == null) {
-      return null;
-    }
-
-    return BottomAppBar(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(Icons.chevron_left),
-              onPressed: _currentPdfPage > 0
-                  ? () {
-                _pdfViewController?.setPage(_currentPdfPage - 1);
-              }
-                  : null,
-            ),
-            Text(
-              'Trang ${_currentPdfPage + 1} / $_totalPdfPages',
-              style: TextStyle(fontSize: 16),
-            ),
-            IconButton(
-              icon: Icon(Icons.chevron_right),
-              onPressed: _currentPdfPage < (_totalPdfPages! - 1)
-                  ? () {
-                _pdfViewController?.setPage(_currentPdfPage + 1);
-              }
-                  : null,
             ),
           ],
         ),

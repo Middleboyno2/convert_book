@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+<!--    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />-->
 
     <application
         android:label="doantotnghiep"
@@ -50,7 +50,7 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
-    <queries>
-        <package android:name="com.google.android.apps.maps"/>
-    </queries>
+<!--    <queries>-->
+<!--        <package android:name="com.google.android.apps.maps"/>-->
+<!--    </queries>-->
 </manifest>

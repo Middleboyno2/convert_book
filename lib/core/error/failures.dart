@@ -81,3 +81,12 @@ class StorageFailure extends Failure {
 
 class CoverUpdateFailure extends Failure{
 }
+
+class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure([super.message = 'Không có quyền thực hiện hành động này']);
+}
+
+// Add new failure for chat operations
+class ChatOperationFailure extends Failure {
+  const ChatOperationFailure([super.message = 'Không thể thực hiện thao tác trò chuyện']);
+}

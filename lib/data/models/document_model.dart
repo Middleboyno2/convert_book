@@ -5,34 +5,20 @@ import '../../domain/entities/document_entity.dart';
 
 class DocumentModel extends DocumentEntity {
   const DocumentModel({
-    required String id,
-    required String title,
-    required DateTime uploadDate,
-    required String filePath,
-    required DocumentType type,
-    required Category category,
-    required String userId,
-    String? author,
-    String? coverUrl,
-    double? readingProgress,
-    int? lastReadPage,
-    String? lastReadPosition,
-    DateTime? lastReadTime,
-  }) : super(
-    id: id,
-    title: title,
-    uploadDate: uploadDate,
-    filePath: filePath,
-    type: type,
-    category: category,
-    userId: userId,
-    author: author,
-    coverUrl: coverUrl,
-    readingProgress: readingProgress,
-    lastReadPage: lastReadPage,
-    lastReadPosition: lastReadPosition,
-    lastReadTime: lastReadTime,
-  );
+    required super.id,
+    required super.title,
+    required super.uploadDate,
+    required super.filePath,
+    required super.type,
+    required super.category,
+    required super.userId,
+    super.author,
+    super.coverUrl,
+    super.readingProgress,
+    super.lastReadPage,
+    super.lastReadPosition,
+    super.lastReadTime,
+  });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
     return DocumentModel(

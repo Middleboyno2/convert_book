@@ -34,7 +34,7 @@ dependencies:
   dio: ^5.8.0+1
   internet_connection_checker: ^3.0.1
   http: ^1.3.0
-  cached_network_image: ^3.4.1
+  cached_network_image: ^3.3.1
   percent_indicator: ^4.2.4
 
 
@@ -47,6 +47,7 @@ dependencies:
   # layoyt
   flutter_screenutil: ^5.9.3
   permission_handler: ^11.4.0
+  device_info_plus:
 
   # File Picker & Reader
   image_picker: ^1.1.2
@@ -54,12 +55,17 @@ dependencies:
   path_provider: ^2.1.5
   epub_view: ^3.2.0
   pdf: ^3.8.4
-  flutter_pdfview: ^1.4.0
+#  native_pdf_renderer:
+#  photo_view:
+#  flutter_html:
+  epubx: ^4.0.0
+  syncfusion_flutter_pdfviewer: ^29.1.37
 
   # firebase
   firebase_auth: ^5.5.1
   firebase_storage: ^12.4.5
   cloud_firestore: ^5.6.5
+  firebase_database: ^11.3.5
   firebase_core: ^3.12.1
   firebase_messaging: ^15.2.4
   firebase_app_check:
@@ -68,6 +74,8 @@ dependencies:
   google_sign_in: ^6.3.0
   sign_in_with_apple: ^6.1.4
   dartz: ^0.10.1
+  rxdart: ^0.28.0
+
 
 
 dev_dependencies:

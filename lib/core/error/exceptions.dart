@@ -26,3 +26,8 @@ class UnsupportedFileException implements Exception {}
 class NotAuthenticatedException implements Exception {}
 
 class StorageException implements Exception {}
+
+class UnauthorizedException implements Exception {
+  final String message;
+  UnauthorizedException([this.message = 'Không có quyền thực hiện hành động này']);
+}

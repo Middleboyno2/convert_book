@@ -1,5 +1,3 @@
-// lib/data/datasources/remote/document_remote_datasource.dart
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,7 +38,12 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
   @override
   Future<bool> isAuthenticated() async {
-    return auth.currentUser != null;
+    final user = auth.currentUser;
+    print('AUTH CHECK: Current user is ${user != null ? "present" : "null"}');
+    if (user != null) {
+      print('AUTH CHECK: User ID = ${user.uid}');
+    }
+    return user != null;
   }
 
   String get userId {
@@ -99,8 +102,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       throw ServerException();
     }
   }
-
-  // lib/data/datasources/remote/document_remote_datasource.dart
 
   @override
   Future<DocumentModel> uploadDocument(File file, String title, {String? author}) async {
@@ -201,7 +202,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!await isAuthenticated()) {
         throw NotAuthenticatedException();
       }
-
       // Lấy URL download bằng helper
       return await storageHelper.getDownloadUrl(filePath);
     } catch (e) {
@@ -270,7 +270,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       }
 
       // Thêm vị trí đọc cuối nếu có
-      if (lastPosition != null) {
+      if (lastPosition != null && lastPosition.isNotEmpty) {
+        print("Updating lastReadPosition to: $lastPosition");
         updatedData['lastReadPosition'] = lastPosition;
       }
 
@@ -287,6 +288,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
       return DocumentModel.fromJson({...updatedSnapshot.data()!, 'id': updatedSnapshot.id});
     } catch (e) {
+      print("Error updating reading progress: $e");
       if (e is NotFoundException || e is NotAuthenticatedException) {
         throw e;
       }
@@ -309,7 +311,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!documentSnapshot.exists) {
         throw NotFoundException();
       }
-
       // Tải ảnh bìa lên Firebase Storage
       final coverFileName = path.basename(coverFile.path);
       final coverStoragePath = 'covers/$userId/${id}_$coverFileName';
@@ -343,13 +344,9 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       final FirebaseStorage storage = FirebaseStorage.instance;
 
       if (type == DocumentType.pdf) {
-        // Cách tiếp cận khác với PDF - sử dụng package mạnh hơn
         final tempDir = await getTemporaryDirectory();
         final tempPath = '${tempDir.path}/cover_${DateTime.now().millisecondsSinceEpoch}.png';
         final coverFile = File(tempPath);
-
-        // Có thể sử dụng ProcessRunner để chạy lệnh pdftoppm, nhưng không phải giải pháp tốt
-        // Cách đơn giản nhất là chỉ tải file lên mà không trích xuất bìa
 
         // Tạo một placeholder image đơn giản
         final pdf = pw.Document();
@@ -362,31 +359,21 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
             },
           ),
         );
-
         final bytes = await pdf.save();
         await coverFile.writeAsBytes(bytes);
-
         // Tải ảnh lên Firebase Storage
         final coverStoragePath = 'covers/$userId/${path.basename(file.path)}_cover.png';
         final storageRef = storage.ref().child(coverStoragePath);
-
         await storageRef.putFile(coverFile);
-
         // Lấy URL download
         final coverUrl = await storageRef.getDownloadURL();
-
         // Xóa file tạm
         await coverFile.delete();
-
         return coverUrl;
-
       } else if (type == DocumentType.epub) {
         // Sử dụng package epubx để đọc dữ liệu EPUB
-        // Lưu ý: Việc này khá phức tạp và đòi hỏi nhiều công việc
-        // Tạm thời trả về null
         return null;
       }
-
       return null;
     } catch (e) {
       print('Error extracting cover: $e');

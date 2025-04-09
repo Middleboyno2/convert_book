@@ -1,12 +1,19 @@
+import 'dart:io';
+
 import 'package:doantotnghiep/presentation/bloc/auth/auth_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/auth/auth_event.dart';
+import 'package:doantotnghiep/presentation/bloc/chat_message/chat_message_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/chat_room/chat_room_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/reader/reader_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_event.dart';
 import 'package:doantotnghiep/presentation/bloc/setting/setting_state.dart';
+import 'package:doantotnghiep/presentation/bloc/user_search/user_search_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/user_search/user_search_state.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,8 +30,34 @@ import 'injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // khoi tao firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Use the auto-generated options from firebase_options.dart
+  if (Firebase.apps.isEmpty) {
+    FirebaseOptions options;
+    if (Platform.isAndroid) {
+      options = const FirebaseOptions(
+        apiKey: "AIzaSyB5LidRsnkoQO8x6EaMtjXowjUvQk2JR5E",
+        appId: "1:1096635672067:android:9bc594f828a0dc8f6a1036",
+        messagingSenderId: "1096635672067",
+        projectId: "convertbo",
+        databaseURL: "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app",
+      );
+    } else if (Platform.isIOS) {
+      options = const FirebaseOptions(
+        apiKey: "AIzaSyB5LidRsnkoQO8x6EaMtjXowjUvQk2JR5E",
+        appId: "1:1096635672067:ios:1ca25e9b1684de6d6a1036",
+        messagingSenderId: "1096635672067",
+        projectId: "convertbo",
+        databaseURL: "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app",
+      );
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+    await Firebase.initializeApp(options: options);
+  }
+
+  // After initialization, set the database URL explicitly
+  FirebaseDatabase.instance.databaseURL = "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app";
+
   // Khởi tạo dependency injection
   await di.init();
   // App Check với debug provider (dùng khi dev)
@@ -57,6 +90,15 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<DocumentReaderBloc>(
           create: (_) => di.sl<DocumentReaderBloc>(),
+        ),
+        BlocProvider<ChatRoomsBloc>(
+          create: (_) => di.sl<ChatRoomsBloc>(),
+        ),
+        BlocProvider<ChatMessagesBloc>(
+          create: (_) => di.sl<ChatMessagesBloc>(),
+        ),
+        BlocProvider<UserSearchBloc>(
+          create: (_) => di.sl<UserSearchBloc>(),
         ),
       ],
 

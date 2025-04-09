@@ -41,6 +41,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           provider = Provider.google;
         } else if (providerId == 'apple.com') {
           provider = Provider.apple;
+        }else {
+
         }
       }
 

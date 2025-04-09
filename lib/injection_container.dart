@@ -4,10 +4,14 @@ import 'package:doantotnghiep/domain/usecases/document/update_document_category_
 import 'package:doantotnghiep/domain/usecases/document/update_document_cover_usecase.dart';
 import 'package:doantotnghiep/domain/usecases/document/update_reading_progress_usecase.dart';
 import 'package:doantotnghiep/presentation/bloc/auth/auth_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/chat_message/chat_message_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/chat_room/chat_room_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_event.dart';
 import 'package:doantotnghiep/presentation/bloc/reader/reader_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/user_search/user_search_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -17,11 +21,24 @@ import 'package:path_provider/path_provider.dart';
 import 'core/network/network_info.dart';
 import 'data/datasources/local/document_local_datasource.dart';
 import 'data/datasources/remote/auth_remote_datasource.dart';
+import 'data/datasources/remote/chat_remote_datasource.dart';
 import 'data/datasources/remote/document_remote_datasource.dart';
 import 'data/repositories/auth_repository_impl.dart';
+import 'data/repositories/chat_repository_impl.dart';
 import 'data/repositories/document_repository_impl.dart';
 import 'domain/repositories/auth_repository.dart';
+import 'domain/repositories/chat_repository.dart';
 import 'domain/repositories/document_repository.dart';
+import 'domain/usecases/chat/add_user_to_chat_room_usecase.dart';
+import 'domain/usecases/chat/create_chat_room_usecase.dart';
+import 'domain/usecases/chat/get_chat_room_use_case.dart';
+import 'domain/usecases/chat/get_message_usecase.dart';
+import 'domain/usecases/chat/join_chat_room_usecase.dart';
+import 'domain/usecases/chat/leave_chat_room.dart';
+import 'domain/usecases/chat/remove_user_from_chat_room_usecase.dart';
+import 'domain/usecases/chat/search_chat_room_use_case.dart';
+import 'domain/usecases/chat/search_user_use_case.dart';
+import 'domain/usecases/chat/send_message_usecase.dart';
 import 'domain/usecases/document/get_document_usecase.dart';
 import 'domain/usecases/document/get_documents_usecase.dart';
 import 'domain/usecases/document/get_download_url_usecase.dart';
@@ -74,6 +91,30 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerFactory(
+        ()=> ChatRoomsBloc(
+      getChatRooms: sl(),
+      createChatRoom: sl(),
+      joinChatRoom: sl(),
+      leaveChatRoom: sl(),
+      addUserToChatRoom: sl(),
+      removeUserFromChatRoom: sl(),
+      searchChatRooms: sl()
+    ),
+  );
+
+  sl.registerFactory(
+      ()=> ChatMessagesBloc(
+          getMessages: sl(),
+          sendMessage: sl()
+      ),
+  );
+  sl.registerFactory(
+        () => UserSearchBloc(
+      searchUsers: sl(),
+    ),
+  );
+
   // Use cases
   // auth
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
@@ -94,6 +135,17 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateReadingProgressUseCase(sl()));
   sl.registerLazySingleton(() => UpdateDocumentCoverUseCase(sl()));
 
+  // chat
+  sl.registerLazySingleton(() => GetChatRoomsUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => CreateChatRoomUseCase(sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  sl.registerLazySingleton(() => JoinChatRoomUseCase(sl()));
+  sl.registerLazySingleton(() => LeaveChatRoomUseCase(sl()));
+  sl.registerLazySingleton(() => AddUserToChatRoomUseCase(sl()));
+  sl.registerLazySingleton(() => RemoveUserFromChatRoomUseCase(sl()));
+  sl.registerLazySingleton(() => SearchChatRoomsUseCase(sl()));
+  sl.registerLazySingleton(() => SearchUsersUseCase(sl()));
   // Repository
   sl.registerLazySingleton<AuthRepository>(
         () => AuthRepositoryImpl(
@@ -106,6 +158,13 @@ Future<void> init() async {
         () => DocumentRepositoryImpl(
       remoteDataSource: sl(),
       localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<ChatRepository>(
+        () => ChatRepositoryImpl(
+      remoteDataSource: sl(),
       networkInfo: sl(),
     ),
   );
@@ -132,6 +191,13 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+        () => ChatRemoteDataSourceImpl(
+      database: sl(),
+      auth: sl(),
+    ),
+  );
+
 
 
   //! Core
@@ -140,6 +206,7 @@ Future<void> init() async {
   //! External
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => GoogleSignIn());
+  sl.registerLazySingleton(() => FirebaseDatabase.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton<InternetConnectionChecker>(() => InternetConnectionChecker.createInstance());

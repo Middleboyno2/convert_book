@@ -32,5 +32,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:1096635672067:ios:1ca25e9b1684de6d6a1036</string>
+	<key>DATABASE_URL</key>
+	<string>https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>

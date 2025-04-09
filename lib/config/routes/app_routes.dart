@@ -1,6 +1,7 @@
 import 'package:doantotnghiep/presentation/pages/auth/auth.dart';
 import 'package:doantotnghiep/presentation/pages/auth/forget_password.dart';
 import 'package:doantotnghiep/presentation/pages/auth/register.dart';
+import 'package:doantotnghiep/presentation/pages/community.dart';
 import 'package:doantotnghiep/presentation/pages/document_reader.dart';
 import 'package:doantotnghiep/presentation/pages/local_file.dart';
 import 'package:doantotnghiep/presentation/pages/support.dart';
@@ -11,6 +12,9 @@ import 'package:doantotnghiep/presentation/pages/setting.dart';
 import 'package:doantotnghiep/presentation/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../domain/entities/chat_entity.dart';
+import '../../presentation/pages/chat_room_page.dart';
 
 
 
@@ -51,11 +55,22 @@ final GoRouter _router = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/community',
+      builder: (context, state) => const CommunityPage()
+    ),
+    GoRoute(
       path: '/reader/:id',
       builder: (BuildContext context, GoRouterState state) {
         final documentId = state.pathParameters['id'];
         return DocumentReaderPage(documentId: documentId.toString());
       },
+    ),
+    GoRoute(
+      name: 'chat_room', // This name needs to match what you're using in pushNamed
+      path: '/chat_room/:chatRoomId', // Define parameter in path
+      builder: (context, state) => ChatRoomPage(
+        chatRoomId: state.pathParameters['chatRoomId']!,
+      ),
     ),
     // GoRoute(
     //   path: '/search',

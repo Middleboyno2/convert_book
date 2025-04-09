@@ -57,7 +57,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is AuthAuthenticated) {
+    if (await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -82,7 +82,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if ( await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -107,7 +107,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if (await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -138,7 +138,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if (await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -163,7 +163,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if (await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -188,7 +188,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if (await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -265,7 +265,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     emit(DocumentLoading());
 
     // Kiểm tra trạng thái xác thực
-    if (authBloc.state is! AuthAuthenticated) {
+    if ( await authBloc.state is! AuthAuthenticated) {
       emit(DocumentAuthenticationRequired());
       return;
     }
