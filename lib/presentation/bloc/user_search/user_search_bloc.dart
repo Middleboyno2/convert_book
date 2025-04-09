@@ -1,10 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/user_search/user_search_event.dart';
 import 'package:doantotnghiep/presentation/bloc/user_search/user_search_state.dart';
-import 'package:equatable/equatable.dart';
-
 import '../../../core/error/failures.dart';
-import '../../../domain/entities/user_entity.dart';
 import '../../../domain/usecases/chat/search_user_use_case.dart';
 
 

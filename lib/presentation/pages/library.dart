@@ -3,7 +3,6 @@ import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_event.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_state.dart';
 import 'package:doantotnghiep/presentation/widgets/CustomSearch.dart';
-import 'package:doantotnghiep/presentation/widgets/empty/empty_book.dart';
 import 'package:doantotnghiep/presentation/widgets/tab_bar.dart';
 import 'package:doantotnghiep/presentation/widgets/tabbar/completed.dart';
 import 'package:doantotnghiep/presentation/widgets/tabbar/unread.dart';
