@@ -37,7 +37,6 @@ class _LibraryPageState extends State<LibraryPage> {
     // Gọi BLoC để tải danh sách tài liệu
     context.read<DocumentBloc>().add(GetDocumentsEvent());
   }
-
   void changeSearch() {
     setState(() {
       isSearch = !isSearch;
