@@ -4,6 +4,7 @@ import 'package:doantotnghiep/presentation/widgets/menu_item/menu_item_book.dart
 import 'package:epub_decoder/epub.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:popover/popover.dart';
 import '../../../config/colors/kcolor.dart';
@@ -169,112 +170,123 @@ class _BookCardState extends State<BookCard> {
             color: Colors.grey[850],
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
               // Book cover and progress indicator
-              Stack(
-                children: [
-                  // Book cover
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 150,
-                      child: _buildCoverImage(),
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: _buildCoverImage(),
+                ),
+              ),
+
+              // Progress indicator
+              Positioned(
+                top: 8,
+                left: 8,
+                child: CircularPercentIndicator(
+                  radius: 18.0,
+                  lineWidth: 3.0,
+                  percent: progress,
+                  center: Text(
+                    "$progressPercent%",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                  progressColor: Kolors.kGold,
+                  backgroundColor: Colors.grey.withOpacity(0.3),
+                ),
+              ),
 
-                  // Progress indicator
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: CircularPercentIndicator(
-                      radius: 18.0,
-                      lineWidth: 3.0,
-                      percent: progress,
-                      center: Text(
-                        "$progressPercent%",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  height: 120,
+                  width: ScreenUtil().screenWidth,
+                  child: Container(
+                    color: Kolors.kOpacityBlack,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Book title
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.document.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      progressColor: Kolors.kGold,
-                      backgroundColor: Colors.grey.withOpacity(0.3),
-                    ),
-                  ),
-
-                  // Play button
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Kolors.kGold,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 20,
+                    
+                        // Author (if available)
+                        widget.document.author != null?
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            widget.document.author!,
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ):
+                        SizedBox.shrink(),
+                    
+                        // Position/index indicator
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.document.lastReadPage != null
+                                ? 'Trang ${widget.document.lastReadPage}'
+                                : 'Trang 0',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
+                    ),
+                  )
+                ),
+              ),
+
+              // Play button
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Kolors.kGold,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                ],
-              ),
-
-              // Book title
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  widget.document.title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
 
-              // Author (if available)
-              widget.document.author != null?
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  widget.document.author!,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ):
-              SizedBox.shrink(),
 
-              // Position/index indicator
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  widget.document.lastReadPage != null
-                      ? 'Trang ${widget.document.lastReadPage}'
-                      : 'Trang 0',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
             ],
           ),
         ),

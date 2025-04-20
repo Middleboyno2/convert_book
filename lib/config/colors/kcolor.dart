@@ -17,5 +17,6 @@ class Kolors {
   static const Color kGold2 = Color(0xFFE2AD6D);
   static const Color kRed = Color(0xFFC80000);
   static const Color kTransparent = Colors.transparent;
+  static const Color kOpacityBlack = Color(0xA5000000);
 
 }
