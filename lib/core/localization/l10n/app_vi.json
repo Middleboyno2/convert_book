@@ -61,5 +61,9 @@
         "wrong_pass": "Mật khẩu không đúng",
         "user_disabled": "Tài khoản đã bị vô hiệu hóa",
         "network": "Không có kết nối mạng"
+    },
+    "menu_item_book": {
+        "edit_image": "edit image",
+        "delete": "delete"
     }
 }

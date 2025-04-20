@@ -1,9 +1,5 @@
-
-
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
-
 import '../../../core/usecase/usecase.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -51,8 +47,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _authStateSubscription = authRepository.authStateChanges.listen((user) {
       if (user != null) {
         add(AuthCheckRequested());
-      } else {
-        emit(AuthUnauthenticated());
       }
     });
   }

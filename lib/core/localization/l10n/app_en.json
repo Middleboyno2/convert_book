@@ -65,5 +65,9 @@
         "wrong_pass": "Wrong password",
         "user_disabled": "User disabled",
         "network": "No internet"
+    },
+    "menu_item_book": {
+        "edit_image": "sửa ảnh",
+        "delete": "xoá"
     }
 }

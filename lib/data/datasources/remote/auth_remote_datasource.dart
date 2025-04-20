@@ -32,7 +32,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (user == null) {
         return null;
       }
-
       // Xác định provider
       Provider provider = Provider.email;
       if (user.providerData.isNotEmpty) {
@@ -42,10 +41,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         } else if (providerId == 'apple.com') {
           provider = Provider.apple;
         }else {
-
+          provider = Provider.anonymous;
         }
       }
-
       return UserModel.fromFirebaseUser(user, provider);
     });
   }
@@ -63,9 +61,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             provider = Provider.google;
           } else if (providerId == 'apple.com') {
             provider = Provider.apple;
+          }else {
+            provider = Provider.anonymous;
           }
         }
-
         return UserModel.fromFirebaseUser(user, provider);
       }
       return null;
@@ -161,11 +160,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       // Kiểm tra tính khả dụng của Apple Sign In
       final isAvailable = await SignInWithApple.isAvailable();
-
       if (!isAvailable) {
         throw AuthException('Đăng nhập bằng Apple không khả dụng trên thiết bị này');
       }
-
       // Thực hiện Apple Sign In
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -173,13 +170,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           AppleIDAuthorizationScopes.fullName,
         ],
       );
-
       // Tạo OAuthCredential từ Apple
       final oauthCredential = OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
         accessToken: appleCredential.authorizationCode,
       );
-
       // Đăng nhập vào Firebase
       final userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
 
@@ -191,7 +186,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             '${appleCredential.givenName} ${appleCredential.familyName}'
         );
       }
-
       return UserModel.fromFirebaseUser(userCredential.user!, Provider.apple);
     } on FirebaseAuthException catch (e) {
       throw AuthException('Lỗi đăng nhập Apple: ${e.message}');

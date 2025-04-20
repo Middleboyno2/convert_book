@@ -84,6 +84,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<AuthBloc>(
           create: (_) => di.sl<AuthBloc>()..add(AuthCheckRequested()),
+          lazy: false,
         ),
         BlocProvider<DocumentBloc>(
           create: (_) => di.sl<DocumentBloc>(),
@@ -138,12 +139,9 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: AppLocalizationsDelegate.supportedLocales,
-
               );
             },
-
           );
-
         },
       ),
     );

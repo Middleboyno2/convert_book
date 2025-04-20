@@ -15,7 +15,7 @@ class CircleFrameTest extends StatefulWidget {
     super.key,
     this.circleColor = Kolors.kGold,
     this.borderColor = Kolors.kGray,
-    this.circleFillColor = const Color(0x34FAFAFA)
+    this.circleFillColor = const Color(0x34FAFAFA),
   });
 
   @override
@@ -35,11 +35,10 @@ class _CircleFrameState extends State<CircleFrameTest> with TickerProviderStateM
 
     // doi 4s chuyen page
     Future.delayed(
-      Duration(seconds: 4), () {
-        context.go('/entrypoint');
-      }
+        Duration(seconds: 4), () {
+      context.go('/entrypoint');
+    }
     );
-
     // Khởi tạo animation controller
     _animationController = AnimationController(
       vsync: this,

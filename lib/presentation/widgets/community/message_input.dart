@@ -7,11 +7,11 @@ class MessageInput extends StatelessWidget {
   final VoidCallback? onAttachment;
 
   const MessageInput({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onSend,
     this.onAttachment,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

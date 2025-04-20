@@ -1,5 +1,6 @@
 // lib/presentation/bloc/document/document_bloc.dart
 
+import 'package:doantotnghiep/domain/entities/user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/error/failures.dart';
@@ -50,14 +51,24 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     on<UpdateDocumentCoverEvent>(_onUpdateDocumentCover);
   }
 
+  Future<UserEntity?> _checkAuthenticationState() async {
+    final result = await authBloc.getCurrentUser(NoParams());
+    return result.fold(
+            (failure) => null,
+            (user) => user
+    );
+  }
+  void retryLoadDocuments() {
+    add(GetDocumentsEvent());
+  }
+
   Future<void> _onGetDocuments(
       GetDocumentsEvent event,
       Emitter<DocumentState> emit,
       ) async {
     emit(DocumentLoading());
-
-    // Kiểm tra trạng thái xác thực
-    if (await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
@@ -81,12 +92,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if ( await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await getDocument(DocumentParams(id: event.id));
     result.fold(
           (failure) {
@@ -106,12 +116,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if (await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await uploadDocument(
       UploadDocumentParams(
         file: event.file,
@@ -137,12 +146,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if (await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await getDownloadUrl(FilePathParams(filePath: event.filePath));
     result.fold(
           (failure) {
@@ -162,12 +170,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if (await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await deleteDocument(DeleteDocumentParams(id: event.id));
     result.fold(
           (failure) {
@@ -187,12 +194,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if (await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await updateDocumentCategory(
       UpdateCategoryParams(
         id: event.id,
@@ -213,19 +219,19 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
 
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
-      case ServerFailure:
+      case ServerFailure _:
         return 'Đã xảy ra lỗi máy chủ';
-      case NetworkFailure:
+      case NetworkFailure _:
         return 'Không có kết nối mạng';
-      case NotFoundFailure:
+      case NotFoundFailure _:
         return 'Không tìm thấy tài liệu';
-      case UnsupportedFileFailure:
+      case UnsupportedFileFailure _:
         return 'Định dạng file không được hỗ trợ';
-      case NotAuthenticatedFailure:
+      case NotAuthenticatedFailure _:
         return 'Vui lòng đăng nhập để tiếp tục';
-      case StorageFailure:
+      case StorageFailure _:
         return 'Lỗi khi tải lên file. Vui lòng thử lại.';
-      case CoverUpdateFailure:
+      case CoverUpdateFailure _:
         return 'Không thể cập nhật ảnh bìa. Vui lòng thử lại.';
       default:
         return 'Đã xảy ra lỗi không xác định';
@@ -245,7 +251,6 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
           lastPosition: event.lastPosition,
         ),
       );
-
       result.fold(
             (failure) {
           // Không emit lỗi để tránh gián đoạn UX khi đọc
@@ -264,19 +269,17 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ) async {
     emit(DocumentLoading());
 
-    // Kiểm tra trạng thái xác thực
-    if ( await authBloc.state is! AuthAuthenticated) {
+    final user = await _checkAuthenticationState();
+    if (user == null) {
       emit(DocumentAuthenticationRequired());
       return;
     }
-
     final result = await updateDocumentCover(
       UpdateDocumentCoverParams(
         id: event.id,
         coverFile: event.coverFile,
       ),
     );
-
     result.fold(
           (failure) {
         if (failure is NotAuthenticatedFailure) {

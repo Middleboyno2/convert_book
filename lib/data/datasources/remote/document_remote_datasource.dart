@@ -61,7 +61,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!await isAuthenticated()) {
         throw NotAuthenticatedException();
       }
-
       final documentSnapshot = await firestore
           .collection('documents')
           .where('userId', isEqualTo: userId)
@@ -73,7 +72,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     } catch (e) {
       debugPrint('Error getting documents: $e');
       if (e is NotAuthenticatedException) {
-        throw e;
+        rethrow;
       }
       throw ServerException();
     }
@@ -86,8 +85,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!await isAuthenticated()) {
         throw NotAuthenticatedException();
       }
-
-      final documentSnapshot = await firestore.collection('documents').doc(id).get();
+      final documentSnapshot = await firestore
+          .collection('documents')
+          .doc(id)
+          .get();
 
       if (!documentSnapshot.exists) {
         throw NotFoundException();
@@ -110,7 +111,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       if (!await isAuthenticated()) {
         throw NotAuthenticatedException();
       }
-
+      // lay path
       final String fileName = path.basename(file.path);
       final String fileExtension = path.extension(fileName).toLowerCase();
 

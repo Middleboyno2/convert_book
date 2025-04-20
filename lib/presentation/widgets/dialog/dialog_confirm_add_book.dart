@@ -15,7 +15,6 @@ Future<bool?> showAddBookDialog({
     context: context,
     barrierDismissible: false,
     builder: (context) => AlertDialog(
-      backgroundColor: Colors.grey[850],
       title: const Text(
         'Add books?',
         style: TextStyle(color: Colors.white),
@@ -51,7 +50,6 @@ Future<bool?> showAddBookDialog({
                       ),
                       title: Text(
                         fileName,
-                        style: TextStyle(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
                       trailing: Icon(

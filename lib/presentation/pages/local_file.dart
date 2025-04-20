@@ -1,14 +1,14 @@
-// lib/presentation/pages/file_picker_page.dart
-
 import 'dart:io';
 import 'package:doantotnghiep/config/colors/kcolor.dart';
 import 'package:doantotnghiep/presentation/widgets/dialog/dialog_nav_to_login.dart';
 import 'package:doantotnghiep/presentation/widgets/dialog/show_loading_dialog.dart';
+import 'package:epub_decoder/epub.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../bloc/document/document_bloc.dart';
 import '../bloc/document/document_event.dart';
@@ -42,50 +42,65 @@ class _FilePickerPageState extends State<FilePickerPage> {
     });
 
     try {
-      // Sử dụng FilePicker để lấy danh sách file gần đây
+      // Use FilePicker with withData option to get bytes for cloud storage files
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'epub'],
         allowMultiple: true,
-        withData: false,
-        onFileLoading: (FilePickerStatus status) {
-          // Có thể hiển thị trạng thái loading nếu cần
-        },
+        withData: true, // Important: get file data as bytes
       );
 
-      if (result != null && result.files.isNotEmpty ) {
-        // Xử lý tất cả các file đã chọn
+      if (result != null && result.files.isNotEmpty) {
         for (var pickedFile in result.files) {
-          if (pickedFile.path != null) {
-            final file = File(pickedFile.path!);
-
-            // Kiểm tra file (tránh trùng lặp)
-            bool isDuplicate = false;
-            for (var existingFile in _files) {
-              if (existingFile.path == file.path) {
-                isDuplicate = true;
-                break;
+          try {
+            File? file;
+            if (pickedFile.bytes != null) {
+              // Google Drive or other cloud file
+              final tempDir = await getTemporaryDirectory();
+              final tempFile = File('${tempDir.path}/${pickedFile.name}');
+              await tempFile.writeAsBytes(pickedFile.bytes!);
+              file = tempFile;
+            } else if (pickedFile.path != null) {
+              final maybeFile = File(pickedFile.path!);
+              if (await maybeFile.exists()) {
+                file = maybeFile;
               }
             }
-            // Chỉ thêm nếu không trùng lặp
-            if (!isDuplicate) {
-              setState(() {
-                _files.add(file);
-                _selectedFiles.add(file);
-              });
+            if(file != null){
+              _addFileIfNotDuplicate(file);
             }
+          } catch (e) {
+            print('Error processing file ${pickedFile.name}: $e');
+            // Continue with next file
           }
         }
-        // Hiển thị dialog xác nhận ngay lập tức
-        // _confirmAddBook();
       }
     } catch (e) {
+      print('Error picking files: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Không thể truy cập file: ${e.toString()}')),
       );
     } finally {
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+  void _addFileIfNotDuplicate(File file) {
+    bool isDuplicate = false;
+    for (var existingFile in _files) {
+      final selectedFileName = path.basename(existingFile.path);
+      if (selectedFileName == path.basename(file.path)) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    // Only add if not a duplicate
+    if (!isDuplicate) {
+      setState(() {
+        _files.add(file);
+        _selectedFiles.add(file);
       });
     }
   }
@@ -128,7 +143,7 @@ class _FilePickerPageState extends State<FilePickerPage> {
     }
   }
 
-  void _uploadSelectedFiles() {
+  void _uploadSelectedFiles() async{
     // Đặt lại bộ đếm
     _pendingUploads = _selectedFiles.length;
     _completedUploads = 0;
@@ -138,20 +153,40 @@ class _FilePickerPageState extends State<FilePickerPage> {
 
     // Lặp qua từng file đã chọn và tải lên
     for (var file in _selectedFiles) {
-      final fileName = path.basenameWithoutExtension(file.path);
-      _uploadSingleFile(file, fileName);
+      final epub = await readEpubFromFile(file);
+      final String author = epub.authors.join(',');
+      print(author);
+      final String title = epub.title;
+      print(title);
+      // final fileName = path.basenameWithoutExtension(file.path);
+      _uploadSingleFile(file, title, author);
     }
   }
 
   // Tải lên một file
-  void _uploadSingleFile(File file, String title) {
+  void _uploadSingleFile(File file, String title, String author) {
     // Gọi BLoC để tải lên file
     context.read<DocumentBloc>().add(
       UploadDocumentEvent(
         file: file,
         title: title,
+        author: author
       ),
     );
+  }
+
+  Future<Epub> readEpubFromFile(File file) async {
+    try {
+      // Đọc bytes từ file
+      final bytes = await file.readAsBytes();
+
+      final epub = Epub.fromBytes(bytes);
+
+      return epub;
+    } catch (e) {
+      print('Lỗi đọc file EPUB: $e');
+      rethrow;
+    }
   }
 
   // điều hướng đến trang đăng nhập nếu chưa đăng nhập
