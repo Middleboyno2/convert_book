@@ -128,15 +128,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       // Tải file lên Firebase Storage
       final String storagePath = await storageHelper.uploadDocument(file);
 
-      // Trích xuất ảnh bìa (nếu có thể)
-      String? coverUrl;
-      try {
-        coverUrl = await extractBookCover(file, docType);
-      } catch (e) {
-        print('Error extracting book cover: $e');
-        // Tiếp tục mà không có ảnh bìa nếu có lỗi
-      }
-
       // Tạo bản ghi tài liệu trong Firestore
       final docData = {
         'title': title,
@@ -146,8 +137,9 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         'category': Category.unread.toString().split('.').last,
         'userId': userId,
         'author': author,
-        'coverUrl': coverUrl,
         'readingProgress': 0.0, // Mặc định là 0%
+        'lastReadPage': 0,
+        'lastReadPosition': 0,
         'lastReadTime': DateTime.now().toIso8601String(),
       };
 
@@ -337,48 +329,6 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         throw e;
       }
       throw ServerException();
-    }
-  }
-
-  Future<String?> extractBookCover(File file, DocumentType type) async {
-    try {
-      final FirebaseStorage storage = FirebaseStorage.instance;
-
-      if (type == DocumentType.pdf) {
-        final tempDir = await getTemporaryDirectory();
-        final tempPath = '${tempDir.path}/cover_${DateTime.now().millisecondsSinceEpoch}.png';
-        final coverFile = File(tempPath);
-
-        // Tạo một placeholder image đơn giản
-        final pdf = pw.Document();
-        pdf.addPage(
-          pw.Page(
-            build: (pw.Context context) {
-              return pw.Center(
-                child: pw.Text('PDF Cover', style: pw.TextStyle(fontSize: 40)),
-              );
-            },
-          ),
-        );
-        final bytes = await pdf.save();
-        await coverFile.writeAsBytes(bytes);
-        // Tải ảnh lên Firebase Storage
-        final coverStoragePath = 'covers/$userId/${path.basename(file.path)}_cover.png';
-        final storageRef = storage.ref().child(coverStoragePath);
-        await storageRef.putFile(coverFile);
-        // Lấy URL download
-        final coverUrl = await storageRef.getDownloadURL();
-        // Xóa file tạm
-        await coverFile.delete();
-        return coverUrl;
-      } else if (type == DocumentType.epub) {
-        // Sử dụng package epubx để đọc dữ liệu EPUB
-        return null;
-      }
-      return null;
-    } catch (e) {
-      print('Error extracting cover: $e');
-      return null;
     }
   }
 }

@@ -17,6 +17,7 @@ import '../bloc/reader/reader_bloc.dart';
 import '../bloc/reader/reader_event.dart';
 import '../bloc/reader/reader_state.dart';
 import '../widgets/custom_reader/custom_epub_reader.dart';
+import '../widgets/custom_reader/custom_epub_reader_2.dart';
 import '../widgets/custom_reader/custom_pdf_reader.dart';
 
 
@@ -106,11 +107,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         String? currentPosition;
 
         if (_document!.type == DocumentType.pdf) {
-          if (_totalPdfPages != null && _totalPdfPages! > 0 && _currentPdfPage >= 0) {
-            progress = _currentPdfPage / _totalPdfPages!;
-            if (progress > 1.0) progress = 1.0;
-            currentPage = _currentPdfPage;
-          }
+          // xử lý sau
         } else if (_document!.type == DocumentType.epub) {
           if (_epubController != null) {
             try {
@@ -134,6 +131,12 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
               lastPage: currentPage,
               lastPosition: currentPosition,
             ),
+          );
+          _saveReadingProgressToLocal(
+              _document!.id,
+              progress,
+              currentPage,
+              currentPosition
           );
         } else {
           // Lưu tiến độ vào local storage
@@ -293,7 +296,8 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   Widget _buildReader(DocumentReaderLoaded state) {
     final document = state.document;
     final file = state.file;
-
+    int lastReadPage = document.lastReadPage ?? 0;
+    double lastReadPosition = document.lastReadPosition ?? 0.0;
     try {
       print('Đang xây dựng trình đọc cho file: ${file.path}');
 
@@ -303,14 +307,13 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         print('File không tồn tại: ${file.path}');
         return _buildErrorView('File không tồn tại: ${file.path}');
       }
-
       print('Loại tài liệu: ${document.type}');
-
       // Sử dụng trình đọc phù hợp dựa trên loại file
       if (document.type == DocumentType.epub) {
-        return CustomEpubReader(
+        return CustomEpubReader2(
           file: file,
-          lastPosition: document.lastReadPosition,
+          lastPosition: lastReadPosition,
+          lastPage: lastReadPage,
         );
       } else {
         return CustomPdfReader(

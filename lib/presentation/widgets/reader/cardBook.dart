@@ -35,7 +35,7 @@ class BookCard extends StatefulWidget {
 class _BookCardState extends State<BookCard> {
   String? coverPath;
   File? _localFile;
-  File? _coverFile;
+
   bool _isLoading = true;
   bool _hasError = false;
   String? _errorMessage;
@@ -97,7 +97,7 @@ class _BookCardState extends State<BookCard> {
     context.read<DocumentBloc>().add(DeleteDocumentEvent(uid));
   }
 
-  Future<void>  extractEpubCover(File file) async{
+  Future<void> extractEpubCover(File file) async{
     final epub = await readEpubFromFile(file);
     // Lấy ảnh bìa
     if (epub.cover != null) {
@@ -173,13 +173,10 @@ class _BookCardState extends State<BookCard> {
           child: Stack(
             children: [
               // Book cover and progress indicator
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
-                ),
-                child: SizedBox(
-                  width: double.infinity,
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: _buildCoverImage(),
                 ),
               ),
@@ -211,7 +208,13 @@ class _BookCardState extends State<BookCard> {
                   height: 120,
                   width: ScreenUtil().screenWidth,
                   child: Container(
-                    color: Kolors.kOpacityBlack,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8)
+                      ),
+                      color: Kolors.kOpacityBlack,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -341,22 +344,11 @@ class _BookCardState extends State<BookCard> {
       );
     }
 
-    // If we have extracted a cover image
-    if (_coverFile != null && _coverFile!.existsSync()) {
-      return Image.file(
-        _coverFile!,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholderCover();
-        },
-      );
-    }
-
     // If the document has a cover URL
     if(coverPath != null) {
       return Image.file(
         File(coverPath!),
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         errorBuilder: (context, error, stackTrace) {
           return _buildPlaceholderCover();
         },

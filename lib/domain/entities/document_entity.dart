@@ -12,10 +12,9 @@ class DocumentEntity extends Equatable {
   final DocumentType type;
   final Category category;
   final String userId;
-  final String? coverUrl; // url anh
   final double? readingProgress; // tien do doc
   final int? lastReadPage; // Trang đọc cuối cùng (pdf)
-  final String? lastReadPosition; // Vị trí đọc cuối (EPUB)
+  final double? lastReadPosition; // Vị trí đọc cuối (EPUB)
   final DateTime? lastReadTime; // Thời gian đọc cuối cùng
 
   const DocumentEntity({
@@ -27,7 +26,6 @@ class DocumentEntity extends Equatable {
     required this.category,
     required this.userId,
     this.author,
-    this.coverUrl,
     this.readingProgress,
     this.lastReadPage,
     this.lastReadPosition,
@@ -36,6 +34,6 @@ class DocumentEntity extends Equatable {
 
   @override
   List<Object?> get props => [id, title, author, uploadDate, filePath, type,
-    category, userId, coverUrl, readingProgress, lastReadPage, lastReadPosition,
+    category, userId, readingProgress, lastReadPage, lastReadPosition,
     lastReadTime];
 }

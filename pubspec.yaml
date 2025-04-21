@@ -56,8 +56,9 @@ dependencies:
   epub_view: ^3.2.0
   epub_decoder: ^0.1.4
   pdf: ^3.8.4
-  epubx: ^4.0.0
   syncfusion_flutter_pdfviewer: ^29.1.37
+  flutter_html: ^3.0.0
+  url_launcher:
 
   # firebase
   firebase_auth: ^5.5.1
