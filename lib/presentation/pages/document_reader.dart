@@ -38,6 +38,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   DocumentEntity? _document;
   late DocumentBloc _documentBloc;
   bool _isOnline = true;
+  bool isHide = true;
 
   // Để theo dõi thời gian giữa các lần cập nhật tiến độ
   DateTime? _lastProgressUpdate;
@@ -196,67 +197,73 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<DocumentBloc, DocumentState>(
-          builder: (context, state) {
-            if (state is DocumentLoaded) {
-              _document = state.document;
-              return Text(state.document.title);
-            }
-            return Text('Đang tải...');
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info_outline),
-            onPressed: () => _showDocumentInfo(),
-          ),
-        ],
-      ),
       // drawer: _document?.type == DocumentType.epub ? _buildTableOfContentsDrawer() : null,
-      body: BlocConsumer<DocumentBloc, DocumentState>(
-        listener: (context, state) {
-          if (state is DocumentLoaded) {
-            _document = state.document;
-            setState(() {
-              _isLoading = false;
-            });
-            // Tải nội dung file
-            _loadDocumentContent();
-          } else if (state is DocumentError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is DocumentAuthenticationRequired) {
-            context.push('/auth');
-          }
-        },
-        builder: (context, state) {
-          if (state is DocumentLoading || _isLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is DocumentLoaded) {
-            return BlocBuilder<DocumentReaderBloc, DocumentReaderState>(
-              builder: (context, readerState) {
-                if (readerState is DocumentReaderLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (readerState is DocumentReaderLoaded) {
-                  try {
-                    return _buildReader(readerState);
-                  } catch (e) {
-                    print('Error building reader: $e');
-                    return _buildErrorView(e.toString());
+      body: Center(
+        child: Stack(
+          children: [
+            AppBar(
+              title: BlocBuilder<DocumentBloc, DocumentState>(
+                builder: (context, state) {
+                  if (state is DocumentLoaded) {
+                    _document = state.document;
+                    return Text(state.document.title);
                   }
-                } else if (readerState is DocumentReaderError) {
-                  return _buildErrorView(readerState.message);
+                  return Text('Đang tải...');
+                },
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.info_outline),
+                  onPressed: () => _showDocumentInfo(),
+                ),
+              ],
+            ),
+            BlocConsumer<DocumentBloc, DocumentState>(
+              listener: (context, state) {
+                if (state is DocumentLoaded) {
+                  _document = state.document;
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  // Tải nội dung file
+                  _loadDocumentContent();
+                } else if (state is DocumentError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                } else if (state is DocumentAuthenticationRequired) {
+                  context.push('/auth');
                 }
-                return Center(child: Text('Đang tải nội dung...'));
               },
-            );
-          } else if (state is DocumentError) {
-            return _buildErrorView(state.message);
-          }
-          return Center(child: CircularProgressIndicator());
-        },
+              builder: (context, state) {
+                if (state is DocumentLoading || _isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is DocumentLoaded) {
+                  return BlocBuilder<DocumentReaderBloc, DocumentReaderState>(
+                    builder: (context, readerState) {
+                      if (readerState is DocumentReaderLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (readerState is DocumentReaderLoaded) {
+                        try {
+                          return _buildReader(readerState);
+                        } catch (e) {
+                          print('Error building reader: $e');
+                          return _buildErrorView(e.toString());
+                        }
+                      } else if (readerState is DocumentReaderError) {
+                        return _buildErrorView(readerState.message);
+                      }
+                      return Center(child: Text('Đang tải nội dung...'));
+                    },
+                  );
+                } else if (state is DocumentError) {
+                  return _buildErrorView(state.message);
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

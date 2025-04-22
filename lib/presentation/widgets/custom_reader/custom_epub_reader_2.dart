@@ -46,6 +46,7 @@ class _CustomEpubReader2State extends State<CustomEpubReader2> {
     try{
       sectionEpub = epub.sections;
       for (var section in sectionEpub) {
+        print(section.content.toString());
         final href = section.content.href; // ví dụ: Text/p001.xhtml
         final filename = href.split('/').last;
         final name = section.content.fileName;
@@ -95,7 +96,7 @@ class _CustomEpubReader2State extends State<CustomEpubReader2> {
 
       // Tách phần thân từ <body> nếu có
       String htmlContent = rawHtml;
-      print("RAW HTML:\n$rawHtml");
+      //print("RAW HTML:\n$rawHtml");
       final bodyStart = rawHtml.indexOf('<body');
       final bodyEnd = rawHtml.indexOf('</body>');
       if (bodyStart != -1 && bodyEnd != -1) {
