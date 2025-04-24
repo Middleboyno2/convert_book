@@ -17,7 +17,6 @@ class DocumentLoading extends DocumentState {}
 
 class DocumentsLoaded extends DocumentState {
   final List<DocumentEntity> documents;
-
   const DocumentsLoaded(this.documents);
 
   @override
@@ -26,7 +25,6 @@ class DocumentsLoaded extends DocumentState {
 
 class DocumentLoaded extends DocumentState {
   final DocumentEntity document;
-
   const DocumentLoaded(this.document);
 
   @override
@@ -71,7 +69,6 @@ class DocumentCategoryUpdated extends DocumentState {
   List<Object?> get props => [document];
 }
 
-// Thêm trạng thái này
 class ReadingProgressUpdated extends DocumentState {
   final DocumentEntity document;
 
@@ -90,5 +87,4 @@ class DocumentCoverUpdated extends DocumentState {
   List<Object?> get props => [document];
 }
 
-// Thêm state mới cho yêu cầu xác thực
 class DocumentAuthenticationRequired extends DocumentState {}

@@ -1,6 +1,8 @@
 {
     "app_title": "My Application",
     "welcome_message": "Welcome {name} to my app",
+    "send_password_reset": "Sent successfully to gmail {name}. Please check your gmail.",
+    "sign_out": "",
     "auth": {
         "title": "LOGIN",
         "email": "Email",
@@ -24,6 +26,10 @@
         "google": "Sign up with google",
         "apple": "Sign up with apple"
     },
+    "forget": {
+        "email": "email",
+        "submit": "send"
+    },
     "library": {
         "title": "Library",
         "welcome": "Hi, {name}!",
@@ -39,7 +45,9 @@
     },
     "empty": {
         "title": "Would you like to create a book of your own?",
-        "title_2": "Click here"
+        "title_2": "Click here",
+        "title_3": "you did to completed read book?",
+        "title_4": "read book"
     },
     "community": {
         "": ""

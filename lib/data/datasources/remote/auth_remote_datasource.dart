@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -9,7 +10,7 @@ abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges;
   Future<UserModel?> getCurrentUser();
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> signUpWithEmailAndPassword(String email, String password);
+  Future<UserModel> signUpWithEmailAndPassword(String email, String password, String name, String phone);
   Future<UserModel> signInWithGoogle();
   Future<UserModel> signInWithApple();
   Future<void> signOut();
@@ -19,12 +20,15 @@ abstract class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FirebaseFirestore _firestore;
 
   AuthRemoteDataSourceImpl({
     required FirebaseAuth firebaseAuth,
     required GoogleSignIn googleSignIn,
+    required FirebaseFirestore firestore,
   })  : _firebaseAuth = firebaseAuth,
-        _googleSignIn = googleSignIn;
+        _googleSignIn = googleSignIn,
+        _firestore = firestore;
 
   @override
   Stream<UserModel?> get authStateChanges {
@@ -55,7 +59,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (user != null) {
         // Xác định provider
         Provider provider = Provider.email;
-        if (user.providerData.isNotEmpty) {
+        if (user.providerData.isEmpty) {
           String providerId = user.providerData[0].providerId;
           if (providerId == 'google.com') {
             provider = Provider.google;
@@ -100,12 +104,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> signUpWithEmailAndPassword(String email, String password) async {
+  Future<UserModel> signUpWithEmailAndPassword(String email, String password, String name, String phone) async {
     try {
       final result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      final String? uid = result.user?.uid;
+      // Tạo bản ghi tài liệu trong Firestore
+      final docData = {
+        'id': uid,
+        'email': email,
+        'displayName': name,
+        'phoneNumber': phone,
+        'provider': Provider.email.name,
+      };
+      await _firestore.collection('users').add(docData);
       return UserModel.fromFirebaseUser(result.user!, Provider.email);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {

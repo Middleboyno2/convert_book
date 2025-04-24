@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/enums.dart';
 import '../../../domain/entities/document_entity.dart';
 import '../empty/empty_book.dart';
@@ -16,6 +17,7 @@ class CompletedBook extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalization = AppLocalizations.of(context);
     // Lọc sách theo category Completed
     final completedBooks = documents
         .where((document) => document.category == Category.completed)
@@ -23,8 +25,8 @@ class CompletedBook extends StatelessWidget {
 
     if (completedBooks.isEmpty) {
       return EmptyBook(
-        title: 'Không có sách nào đã hoàn thành',
-        buttonText: 'Xem sách chưa đọc',
+        title: appLocalization.translate('empty.title_3'),
+        buttonText: appLocalization.translate('empty.title_4'),
         onPressed: () {
           DefaultTabController.of(context).animateTo(0);
         },

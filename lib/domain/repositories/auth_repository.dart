@@ -6,7 +6,7 @@ abstract class AuthRepository {
   Stream<UserEntity?> get authStateChanges;
   Future<Either<Failure, UserEntity>> getCurrentUser();
   Future<Either<Failure, UserEntity>> signInWithEmailAndPassword(String email, String password);
-  Future<Either<Failure, UserEntity>> signUpWithEmailAndPassword(String email, String password);
+  Future<Either<Failure, UserEntity>> signUpWithEmailAndPassword(String email, String password, String name, String phone);
   Future<Either<Failure, UserEntity>> signInWithGoogle();
   Future<Either<Failure, UserEntity>> signInWithApple();
   Future<Either<Failure, void>> signOut();

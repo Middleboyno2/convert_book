@@ -1,3 +1,4 @@
+import 'package:doantotnghiep/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,6 +17,7 @@ class UnreadBook extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalization = AppLocalizations.of(context);
     // Lọc sách theo category Unread
     final unreadBooks = documents
         .where((document) => document.category == Category.unread)
@@ -23,8 +25,8 @@ class UnreadBook extends StatelessWidget {
 
     if (unreadBooks.isEmpty) {
       return EmptyBook(
-        title: 'Không có sách nào chưa đọc',
-        buttonText: 'Thêm sách mới',
+        title: appLocalization.translate('empty.title'),
+        buttonText: appLocalization.translate('empty.title_2'),
         onPressed: () {
           context.push('/storage');
         },

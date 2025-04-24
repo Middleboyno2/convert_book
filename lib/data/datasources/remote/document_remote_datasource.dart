@@ -19,7 +19,7 @@ abstract class DocumentRemoteDataSource {
   Future<DocumentModel> uploadDocument(File file, String title, {String? author});
   Future<void> deleteDocument(String id);
   Future<String> getDownloadUrl(String filePath);
-  Future<bool> isAuthenticated();
+  // Future<bool> isAuthenticated();
   Future<DocumentModel> updateDocumentCategory(String id, Category category);
   Future<DocumentModel> updateReadingProgress(String id, double progress, int? lastPage, String? lastPosition);
   Future<DocumentModel> updateDocumentCover(String id, File coverFile);
@@ -36,15 +36,15 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     required FirebaseStorage storage,
   }) : storageHelper = FirebaseStorageHelper(storage: storage, auth: auth);
 
-  @override
-  Future<bool> isAuthenticated() async {
-    final user = auth.currentUser;
-    print('AUTH CHECK: Current user is ${user != null ? "present" : "null"}');
-    if (user != null) {
-      print('AUTH CHECK: User ID = ${user.uid}');
-    }
-    return user != null;
-  }
+  // @override
+  // Future<bool> isAuthenticated() async {
+  //   final user = auth.currentUser;
+  //   print('AUTH CHECK: Current user is ${user != null ? "present" : "null"}');
+  //   if (user != null) {
+  //     print('AUTH CHECK: User ID = ${user.uid}');
+  //   }
+  //   return user != null;
+  // }
 
   String get userId {
     final user = auth.currentUser;
@@ -57,10 +57,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<List<DocumentModel>> getDocuments() async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       final documentSnapshot = await firestore
           .collection('documents')
           .where('userId', isEqualTo: userId)
@@ -81,10 +81,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<DocumentModel> getDocumentById(String id) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       final documentSnapshot = await firestore
           .collection('documents')
           .doc(id)
@@ -107,10 +107,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<DocumentModel> uploadDocument(File file, String title, {String? author}) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       // lay path
       final String fileName = path.basename(file.path);
       final String fileExtension = path.extension(fileName).toLowerCase();
@@ -160,10 +160,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<void> deleteDocument(String id) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
 
       // Lấy document để lấy đường dẫn storage
       final docSnapshot = await firestore.collection('documents').doc(id).get();
@@ -191,10 +191,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<String> getDownloadUrl(String filePath) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       // Lấy URL download bằng helper
       return await storageHelper.getDownloadUrl(filePath);
     } catch (e) {
@@ -209,10 +209,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<DocumentModel> updateDocumentCategory(String id, Category category) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       // Lấy document hiện tại
       final documentSnapshot = await firestore.collection('documents').doc(id).get();
 
@@ -239,10 +239,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<DocumentModel> updateReadingProgress(String id, double progress, int? lastPage, String? lastPosition) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
 
       // Lấy document hiện tại
       final documentSnapshot = await firestore.collection('documents').doc(id).get();
@@ -292,10 +292,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<DocumentModel> updateDocumentCover(String id, File coverFile) async {
     try {
-      // Kiểm tra xác thực
-      if (!await isAuthenticated()) {
-        throw NotAuthenticatedException();
-      }
+      // // Kiểm tra xác thực
+      // if (!await isAuthenticated()) {
+      //   throw NotAuthenticatedException();
+      // }
       final FirebaseStorage storage = FirebaseStorage.instance;
 
       // Lấy document hiện tại để kiểm tra

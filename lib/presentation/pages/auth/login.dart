@@ -43,6 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void nextPageForget(){
+    widget.pageController.animateToPage(
+      2,
+      duration: Duration(milliseconds: 400),
+      curve: Curves.easeInOut
+    );
+  }
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
@@ -114,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   appLocalization.translate('auth.title'),
                   style: Theme.of(context).textTheme.displayLarge,
                 ),
+
                 // email
                 CustomTextFormField(
                   controller: email,
@@ -121,6 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: appLocalization.translate('auth.email'),
                   validator: _validateEmail,
                 ),
+
                 // password
                 CustomTextFormField(
                   controller: password,
@@ -138,11 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     GestureDetector(
                       onTap: (){
-                        widget.pageController.animateToPage(
-                          2,
-                          duration: Duration(milliseconds: 400),
-                          curve: Curves.easeInOut
-                        );
+                        nextPageForget();
                       },
                       child: Text(
                           AppLocalizations.of(context).translate('auth.forget')
@@ -155,10 +161,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, state) {
                     return CustomButton(
                       onPressed: (){
-                        state is AuthLoading ? null: _submit();
+                        state is AuthEmailPassLoading ? null: _submit();
                       },
-                      isLoading: state is AuthLoading ? true: false,
-                      isSubmit: state is AuthLoading ? false: true,
+                      isLoading: state is AuthEmailPassLoading ? true: false,
+                      isSubmit: state is AuthEmailPassLoading ? false: true,
                       text: AppLocalizations.of(context).translate('auth.submit'),
                     );
                   }
@@ -195,11 +201,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         //google
                         CustomButtonAuth(
                           onPressed: () {
-                            state is AuthLoading ?
+                            state is AuthGoogleLoading ?
                             null
                                 :
                             context.read<AuthBloc>().add(AuthSignInWithGoogleRequested());
-
                           },
                           text: AppLocalizations.of(context).translate('auth.google'),
                           icon: Image.asset(
@@ -215,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         //apple
                         CustomButtonAuth(
                           onPressed: () {
-                            state is AuthLoading ?
+                            state is AuthAppleLoading ?
                             null
                                 :
                             context.read<AuthBloc>().add(AuthSignInWithAppleRequested());
@@ -253,7 +258,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ]
                   )
                 ),
-
               ],
             )
           ),

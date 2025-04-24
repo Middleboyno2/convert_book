@@ -1,6 +1,8 @@
 {
     "app_title": "StoryHub",
     "welcome_message": "Chào mừng {name} đến với ứng dụng của tôi",
+    "send_password_reset": "Sent successfully to gmail {name}. Please check your gmail.",
+    "sign_out": "",
     "auth": {
         "title": "ĐĂNG NHẬP",
         "email": "Email",
@@ -24,6 +26,10 @@
         "google": "Đăng ký với google",
         "apple": "Đăng ký với apple"
     },
+    "forget": {
+        "email": "email",
+        "submit": "gửi yêu cầu"
+    },
     "library": {
         "title": "Thư viện",
         "welcome": "Xin chào, {name}!",
@@ -39,7 +45,9 @@
     },
     "empty": {
         "title": "Bạn có muốn tự tạo một cuốn sách cho riêng mình không?",
-        "title_2": "Bấm vào đây"
+        "title_2": "Bấm vào đây",
+        "title_3": "bạn đã đọc hết cuốn sách nào chưa?",
+        "title_4": "đọc sách"
     },
     "community": {
         "": ""

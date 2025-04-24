@@ -56,9 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Emitter<AuthState> emit
       ) async {
     emit(AuthLoading());
-
     final result = await getCurrentUser(NoParams());
-
     result.fold(
           (failure) => emit(AuthUnauthenticated()),
           (user) => emit(AuthAuthenticated(user)),
@@ -69,7 +67,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignInWithEmailPasswordRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthEmailPassLoading());
 
     final result = await signInWithEmailPassword(
       SignInWithEmailPasswordParams(
@@ -88,12 +86,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignUpWithEmailPasswordRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthEmailPassLoading());
 
     final result = await signUpWithEmailPassword(
       SignUpWithEmailPasswordParams(
         email: event.email,
         password: event.password,
+        name: event.name,
+        phone: event.phone,
       ),
     );
 
@@ -107,7 +107,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignInWithGoogleRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthGoogleLoading());
 
     final result = await signInWithGoogle(NoParams());
 
@@ -121,7 +121,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignInWithAppleRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthAppleLoading());
 
     final result = await signInWithApple(NoParams());
 
@@ -135,7 +135,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignOutRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthSignOutLoading());
 
     final result = await signOut(NoParams());
 
@@ -149,7 +149,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSendPasswordResetEmailRequested event,
       Emitter<AuthState> emit
       ) async {
-    emit(AuthLoading());
+    emit(AuthSendEmailLoading());
 
     final result = await sendPasswordResetEmail(
       SendPasswordResetEmailParams(email: event.email),

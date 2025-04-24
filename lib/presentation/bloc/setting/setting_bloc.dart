@@ -19,10 +19,11 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
       ) async {
     // Khi ứng dụng khởi động, lấy ngôn ngữ đã lưu
     final prefs = await SharedPreferences.getInstance();
+    // nếu null thì mặc định là English
     final savedLanguageCode = prefs.getString('language_code') ?? 'en';
     final savedCountryCode = prefs.getString('country_code') ?? 'US';
 
-    // Get saved theme preference if exists
+    // nếu null thì = false
     final isDarkMode = prefs.getBool('is_dark_mode') ?? false;
 
     emit(SettingLoadedState(
@@ -35,7 +36,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
       ChangeLanguageEvent event,
       Emitter<SettingState> emit,
       ) async {
-    // Get current state to preserve theme settings
+    // lấy giá trị isDarkMode từ state
     final currentState = state;
     bool isDarkMode = false;
 
@@ -94,7 +95,6 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     if (currentState is SettingLoadedState) {
       locale = currentState.locale;
     }
-
     // Lưu cài đặt theme
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_dark_mode', event.isDarkMode);

@@ -82,7 +82,6 @@ class DocumentReaderBloc extends Bloc<DocumentReaderEvent, DocumentReaderState> 
                 (failure) => throw failure,
                 (url) => url,
           );
-
           try {
             file = await localDataSource.saveDocumentLocally(url, fileName);
             // Kiểm tra file đã lưu thành công chưa

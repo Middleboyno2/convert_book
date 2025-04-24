@@ -9,6 +9,7 @@ import 'package:doantotnghiep/presentation/bloc/chat_room/chat_room_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/document/document_event.dart';
 import 'package:doantotnghiep/presentation/bloc/reader/reader_bloc.dart';
+import 'package:doantotnghiep/presentation/bloc/setting/setting_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/user_search/user_search_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -56,7 +57,12 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   //! Features - Auth
+
   // Bloc
+  sl.registerFactory(
+      () => SettingBloc(
+      )
+  );
   sl.registerFactory(
         () => AuthBloc(
       getCurrentUser: sl(),
@@ -174,6 +180,7 @@ Future<void> init() async {
         () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl(),
       googleSignIn: sl(),
+      firestore: sl(),
     ),
   );
 

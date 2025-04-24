@@ -24,6 +24,11 @@ class ChatMessagesBloc extends Bloc<ChatMessagesEvent, ChatMessagesState> {
     on<LoadMessagesEvent>(_onLoadMessages);
     on<MessagesUpdatedEvent>(_onMessagesUpdated);
     on<SendMessageEvent>(_onSendMessage);
+    on<MessagesErrorEvent>(_onMessError);
+
+  }
+  Future<void> _onMessError(event, emit) async{
+    emit(ChatMessagesError('Failed to load messages: ${event.error}'));
   }
 
   Future<void> _onLoadMessages(

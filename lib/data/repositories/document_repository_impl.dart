@@ -1,5 +1,3 @@
-// lib/data/repositories/document_repository_impl.dart
-
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
@@ -62,11 +60,11 @@ class DocumentRepositoryImpl implements DocumentRepository {
   Future<Either<Failure, DocumentEntity>> uploadDocument(File file, String title, {String? author}) async {
     if (await networkInfo.isConnected) {
       try {
-        // Kiểm tra xác thực
-        final isAuthenticated = await remoteDataSource.isAuthenticated();
-        if (!isAuthenticated) {
-          return Left(NotAuthenticatedFailure());
-        }
+        // // Kiểm tra xác thực
+        // final isAuthenticated = await remoteDataSource.isAuthenticated();
+        // if (!isAuthenticated) {
+        //   return Left(NotAuthenticatedFailure());
+        // }
 
         final uploadedDocument = await remoteDataSource.uploadDocument(file, title, author: author);
         return Right(uploadedDocument);

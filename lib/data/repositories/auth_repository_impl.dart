@@ -74,7 +74,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, UserEntity>> signUpWithEmailAndPassword(String email,
-      String password) async {
+      String password, String name, String phone) async {
     try {
       final isConnected = await networkInfo.isConnected;
       if (!isConnected) {
@@ -82,7 +82,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       final user = await remoteDataSource.signUpWithEmailAndPassword(
-          email, password);
+          email, password, name, phone);
       return Right(user);
     } on AuthException catch (e) {
       if (e.message.contains('Email này đã được sử dụng')) {

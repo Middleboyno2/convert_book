@@ -54,3 +54,8 @@ class DeleteMessageEvent extends ChatMessagesEvent {
   @override
   List<Object> get props => [chatRoomId, messageId];
 }
+
+class MessagesErrorEvent extends ChatMessagesEvent {
+  final String error;
+  const MessagesErrorEvent(this.error);
+}

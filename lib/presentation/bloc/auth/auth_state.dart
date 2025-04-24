@@ -15,6 +15,16 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
+class AuthEmailPassLoading extends AuthState {}
+
+class AuthGoogleLoading extends AuthState {}
+
+class AuthAppleLoading extends AuthState {}
+
+class AuthSendEmailLoading extends AuthState {}
+
+class AuthSignOutLoading extends AuthState {}
+
 class AuthAuthenticated extends AuthState {
   final UserEntity user;
 
