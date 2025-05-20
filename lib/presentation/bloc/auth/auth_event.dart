@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 abstract class AuthEvent extends Equatable{
@@ -57,4 +59,13 @@ class AuthSendPasswordResetEmailRequested extends AuthEvent {
 
   @override
   List<Object> get props => [email];
+}
+
+class UploadProfileImageRequested extends AuthEvent{
+  final File file;
+
+  const UploadProfileImageRequested({required this.file});
+
+  @override
+  List<Object> get props => [file];
 }

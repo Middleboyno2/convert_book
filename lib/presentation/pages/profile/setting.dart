@@ -2,7 +2,7 @@ import 'package:doantotnghiep/presentation/widgets/setting/ChangeThemeTile.dart'
 import 'package:doantotnghiep/presentation/widgets/setting/language_dropdown.dart';
 import 'package:flutter/material.dart';
 
-import '../../config/colors/kcolor.dart';
+import '../../../config/colors/kcolor.dart';
 
 class Setting extends StatelessWidget {
   const Setting({super.key});

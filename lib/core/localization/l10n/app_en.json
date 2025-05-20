@@ -53,14 +53,16 @@
         "": ""
     },
     "profile": {
-        "account": "account",
+        "instruction_manual": "instruction manual",
         "setting": "setting",
-        "support": "support"
+        "support": "support",
+        "sign_out": "sign out"
     },
     "navigation": {
         "lib": "library",
         "community": "cummunity",
-        "profile": "profile"
+        "profile": "profile",
+        "chatbot": "chatbot"
     },
     "splash": {
         "title": "StoryHub"
@@ -77,5 +79,12 @@
     "menu_item_book": {
         "edit_image": "sửa ảnh",
         "delete": "xoá"
+    },
+    "message": {
+        "message_update_image": "photo changed successful"
+    },
+    "manual": {
+        "title_1": "how to add book?",
+        "how_to_add_book?": "Goodreads Librarians are volunteers who help ensure the accuracy of information about books and authors in the Goodreads catalog. The Goodreads Librarians Group is the official group for requesting additions or updates to the Goodreads catalog.\n\nIf you're a member with a new request, first make sure the book isn't available on Goodreads by searching for the book by ISBN/ASIN. You can find ISBN numbers on the inside cover of your book. If the book has an ASIN, this can easily be found on the book listing or page when visiting the Amazon Marketplace where you bought/borrowed the book.\n\nIf the book isn't found, visit the Goodreads Librarians Group and click Join Group. Once you've been added to the group, you can then post your question following this link and making sure to follow these guidelines.\n\nSimple requests (e.g., page count updates) typically take around 48 hours depending on the volume of requests, while more complex requests could take up to a couple of weeks (e.g., adding a new book to Goodreads)."
     }
 }

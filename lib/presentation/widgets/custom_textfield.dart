@@ -10,12 +10,10 @@ class CustomTextFormField extends StatefulWidget {
   final String hintText;
   final Widget? prefixIcon;
   final bool suffixIcon;
-  final bool obscureText;
   final Color border;
   final Color focusColor;
   final Color focusBorderColor;
   final Color errorBorderColor;
-  final VoidCallback? onPressedSuffix;
   final FormFieldValidator<String>? validator;
   const CustomTextFormField({
     super.key,
@@ -24,13 +22,12 @@ class CustomTextFormField extends StatefulWidget {
     this.hintText = "",
     this.prefixIcon,
     this.suffixIcon = false,
-    this.obscureText = false,
     this.border = Kolors.kGray,
     this.focusColor = Kolors.kDark,
     this.focusBorderColor = Kolors.kGold,
     this.errorBorderColor = Kolors.kRed,
     this.textInput = TextInputType.text,
-    this.onPressedSuffix, required this.labelText,
+    required this.labelText,
     this.validator,
   });
 
@@ -39,12 +36,20 @@ class CustomTextFormField extends StatefulWidget {
 }
 
 class _CustomTextFormFieldState extends State<CustomTextFormField> {
+  bool obscure = false;
+
+  // change icon state
+  void changeObscure(){
+    setState(() {
+      obscure = !obscure;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
       keyboardType: widget.textInput,
-      obscureText: widget.obscureText,
+      obscureText: obscure,
       decoration: InputDecoration(
         labelText: widget.labelText,
         labelStyle: Theme.of(context).textTheme.bodyMedium,
@@ -61,12 +66,12 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         // anh ben phai
         suffixIcon: widget.suffixIcon?
         IconButton(
-          icon:Icon(widget.obscureText?
+          icon:Icon(obscure?
           Icons.visibility_outlined
               :
           Icons.visibility_off_outlined),
 
-          onPressed: () {widget.onPressedSuffix!();},
+          onPressed: () {changeObscure();},
         )
             :
         null,

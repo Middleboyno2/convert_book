@@ -180,4 +180,47 @@ class DocumentRepositoryImpl implements DocumentRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, File>> getLocalDocument(String fileName) async{
+    if (await networkInfo.isConnected) {
+      try {
+        final localDocument = await localDataSource.getLocalDocument(fileName);
+        return Right(localDocument);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isDocumentCached(String fileName) async{
+    if (await networkInfo.isConnected) {
+      try {
+        final isDocument = await localDataSource.isDocumentCached(fileName);
+        return Right(isDocument);
+      } catch(e){
+        print("error: $e");
+        return Left(CacheFailure(e.toString()));
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, File>> saveDocumentLocally(String url, String fileName) async{
+    if (await networkInfo.isConnected) {
+      try {
+        final localDocument = await localDataSource.saveDocumentLocally(url, fileName);
+        return Right(localDocument);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
 }

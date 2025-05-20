@@ -28,4 +28,34 @@ class R{
   static const String ASSETS_IMAGE_ERROR_IMAGE = "assets/images/empty/error_photo.png";
 
   static const String ASSETS_IMAGE_PROFILE_NOT_FOUND = "assets/images/empty/profile.png";
+
+  // icon
+  static const String ASSETS_ICON_LIB = 'assets/icon/library.gif';
+
+  static const String ASSETS_ICON_LIB_OUTLINE = 'assets/icon/library_outline.gif';
+
+  static const String ASSETS_ICON_CHAT_BOT = 'assets/icon/chatbot.gif';
+
+  static const String ASSETS_ICON_CHAT_BOT_OUTLINE = 'assets/icon/chatbot_outline.gif';
+
+  static const String ASSETS_ICON_COMMUNITY = 'assets/icon/community.gif';
+
+  static const String ASSETS_ICON_COMMUNITY_OUTLINE = 'assets/icon/community_outline.gif';
+
+  static const String ASSETS_ICON_PROFILE = 'assets/icon/profile.gif';
+
+  static const String ASSETS_ICON_PROFILE_OUTLINE = 'assets/icon/profile_outline.gif';
+
+  static const String ASSETS_ICON_EDIT_PROFILE = 'assets/icon/edit_profile.gif';
+
+  static const String ASSETS_ICON_QUESTION = 'assets/icon/question.gif';
+
+  static const String ASSETS_ICON_SEARCH_BOOK = 'assets/icon/search_book.gif';
+
+  static const String ASSETS_ICON_SEARCH_USER = 'assets/icon/search_user.gif';
+
+  static const String ASSETS_ICON_SETTING = 'assets/icon/settings.gif';
+
+  static const String ASSETS_ICON_INSTRUCTION = 'assets/icon/instruction.gif';
+
 }

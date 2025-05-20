@@ -5,9 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
-
 import '../../../core/error/exceptions.dart';
 import '../../../core/utils/enums.dart';
 import '../../../core/utils/firebase_storage_helper.dart';

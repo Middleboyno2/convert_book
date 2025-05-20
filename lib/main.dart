@@ -30,32 +30,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Use the auto-generated options from firebase_options.dart
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // if (Firebase.apps.isEmpty) {
-  //   FirebaseOptions options;
-  //   if (Platform.isAndroid) {
-  //     options = const FirebaseOptions(
-  //       apiKey: "AIzaSyB5LidRsnkoQO8x6EaMtjXowjUvQk2JR5E",
-  //       appId: "1:1096635672067:android:9bc594f828a0dc8f6a1036",
-  //       messagingSenderId: "1096635672067",
-  //       projectId: "convertbo",
-  //       databaseURL: "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app",
-  //     );
-  //   } else if (Platform.isIOS) {
-  //     options = const FirebaseOptions(
-  //       apiKey: "AIzaSyB5LidRsnkoQO8x6EaMtjXowjUvQk2JR5E",
-  //       appId: "1:1096635672067:ios:1ca25e9b1684de6d6a1036",
-  //       messagingSenderId: "1096635672067",
-  //       projectId: "convertbo",
-  //       databaseURL: "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app",
-  //     );
-  //   } else {
-  //     throw UnsupportedError('Unsupported platform');
-  //   }
-  //   await Firebase.initializeApp(options: options);
-  // }
 
   // After initialization, set the database URL explicitly
-  FirebaseDatabase.instance.databaseURL = "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app";
+  // FirebaseDatabase.instance.databaseURL = "https://convertbo-default-rtdb.asia-southeast1.firebasedatabase.app";
 
   // Khởi tạo dependency injection
   await di.init();

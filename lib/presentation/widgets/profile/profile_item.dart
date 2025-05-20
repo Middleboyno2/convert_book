@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/resource.dart';
+
 class ProfileItem extends StatelessWidget {
-  final IconData icon;
+  final String name;
   final String title;
   final VoidCallback onTap;
   const ProfileItem({
     super.key,
-    required this.icon,
+    required this.name,
     required this.title,
     required this.onTap
   });
@@ -16,7 +18,9 @@ class ProfileItem extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          leading: Icon(icon), // Biểu tượng ở bên trái
+          leading: Image.asset(
+            name
+          ),
           title: Text(
             title,
             // style: const TextStyle(color: Colors.white), // Màu chữ

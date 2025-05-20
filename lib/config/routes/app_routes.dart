@@ -4,12 +4,14 @@ import 'package:doantotnghiep/presentation/pages/auth/register.dart';
 import 'package:doantotnghiep/presentation/pages/community.dart';
 import 'package:doantotnghiep/presentation/pages/document_reader.dart';
 import 'package:doantotnghiep/presentation/pages/local_file.dart';
-import 'package:doantotnghiep/presentation/pages/support.dart';
+import 'package:doantotnghiep/presentation/pages/profile/instruction_manual.dart';
+import 'package:doantotnghiep/presentation/pages/profile/support.dart';
 import 'package:doantotnghiep/presentation/pages/entrypoint.dart';
 import 'package:doantotnghiep/presentation/pages/library.dart';
 import 'package:doantotnghiep/presentation/pages/auth/login.dart';
-import 'package:doantotnghiep/presentation/pages/setting.dart';
+import 'package:doantotnghiep/presentation/pages/profile/setting.dart';
 import 'package:doantotnghiep/presentation/pages/splash.dart';
+import 'package:doantotnghiep/presentation/widgets/custom_image_picker/image_picker_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,8 +53,15 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/storage',
       builder: (context, state) => const FilePickerPage(
-
       ),
+    ),
+    GoRoute(
+      path: '/image_picker',
+      builder: (context, state) => const ImagePickerScreen(),
+    ),
+    GoRoute(
+      path: '/manual',
+      builder: (context, state) => const InstructionManual(),
     ),
     GoRoute(
       path: '/community',

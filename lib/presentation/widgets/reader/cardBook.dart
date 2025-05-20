@@ -56,7 +56,7 @@ class _BookCardState extends State<BookCard> {
 
       // Get download URL from bloc
       context.read<DocumentReaderBloc>().add(
-        LoadDocumentEvent(widget.document, isOnline: true),
+        LoadDocumentEvent(widget.document),
       );
         } catch (e) {
       setState(() {

@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:doantotnghiep/domain/usecases/document/get_local_document_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/is_document_cached_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/save_document_locally_usecase.dart';
 import 'package:doantotnghiep/presentation/bloc/reader/reader_event.dart';
 import 'package:doantotnghiep/presentation/bloc/reader/reader_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,11 +16,15 @@ import '../../../domain/usecases/document/get_download_url_usecase.dart';
 
 class DocumentReaderBloc extends Bloc<DocumentReaderEvent, DocumentReaderState> {
   final GetDownloadUrlUseCase getDownloadUrl;
-  final DocumentLocalDataSource localDataSource;
+  final GetLocalDocumentUseCase getLocalDocument;
+  final IsDocumentCachedUseCase isDocumentCached;
+  final SaveDocumentLocallyUseCase saveDocumentLocally;
 
   DocumentReaderBloc({
     required this.getDownloadUrl,
-    required this.localDataSource,
+    required this.getLocalDocument,
+    required this.isDocumentCached,
+    required this.saveDocumentLocally
   }) : super(DocumentReaderInitial()) {
     on<LoadDocumentEvent>(_onLoadDocument);
     on<SaveReadingProgressEvent>(_onSaveReadingProgress);
@@ -32,43 +39,37 @@ class DocumentReaderBloc extends Bloc<DocumentReaderEvent, DocumentReaderState> 
       final document = event.document;
       final String fileName = _getFileName(document.filePath);
       File file =  File('');
-      bool shouldDownload = event.isOnline;
       // Kiểm tra xem file đã được cache chưa
       bool isCached = false;
-      try {
-        isCached = await localDataSource.isDocumentCached(fileName);
-      } catch (e) {
-        print('Error checking cache: $e');
-        isCached = false;
-      }
+      bool shouldDownload = false;
+      final result = await isDocumentCached(IsDocumentCachedParams(fileName: fileName));
+      result.fold(
+              (failure) => {
+            emit(DocumentReaderError(failure.message))
+          },
+              (isDocumentCached) => {
+            isCached = isDocumentCached
+          }
+      );
       if (isCached) {
-        try {
-          file = await localDataSource.getLocalDocument(fileName);
-          // Kiểm tra file tồn tại và có kích thước > 0
-          if (!file.existsSync() || await file.length() == 0) {
-            if (event.isOnline) {
-              // Nếu đang online và file cached không hợp lệ, tải lại
-              shouldDownload = true;
-            } else {
-              throw CacheException('File đã lưu không hợp lệ');
-            }
-          } else {
-            // File cached hợp lệ, không cần tải lại
-            shouldDownload = false;
-          }
-        } catch (e) {
-          print('Error getting cached file: $e');
-          if (event.isOnline) {
-            shouldDownload = true;
-          } else {
-            throw CacheException('Không thể đọc file đã lưu: $e');
-          }
+        final result = await getLocalDocument(GetLocalDocumentParams(fileName: fileName));
+        result.fold(
+                (failure) => {
+              emit(DocumentReaderError(failure.message))
+            },
+                (getFile) => file = getFile
+        );
+        // Kiểm tra file tồn tại và có kích thước > 0
+        if (!file.existsSync() || await file.length() == 0) {
+          // Nếu đang online và file cached không hợp lệ, tải lại
+          shouldDownload = true;
+        } else {
+          // File cached hợp lệ, không cần tải lại
+          shouldDownload = false;
         }
       } else {
         // File chưa được cache
-        if (!event.isOnline) {
-          throw CacheException('Không tìm thấy file đã lưu và đang ở chế độ ngoại tuyến');
-        }
+        print('Không tìm thấy file đã lưu');
         shouldDownload = true;
       }
       if (shouldDownload) {
@@ -77,28 +78,25 @@ class DocumentReaderBloc extends Bloc<DocumentReaderEvent, DocumentReaderState> 
           final downloadUrlResult = await getDownloadUrl(
             FilePathParams(filePath: document.filePath),
           );
-
-          final url = downloadUrlResult.fold(
-                (failure) => throw failure,
-                (url) => url,
+          late String urlDoc;
+          downloadUrlResult.fold(
+                (failure) => emit(DocumentReaderError(failure.message)),
+                (url) => urlDoc = url,
           );
-          try {
-            file = await localDataSource.saveDocumentLocally(url, fileName);
-            // Kiểm tra file đã lưu thành công chưa
-            if (!file.existsSync() || await file.length() == 0) {
-              throw CacheException('File tải về không hợp lệ');
-            }
-          } catch (e) {
-            print('Error saving file locally: $e');
-            throw CacheException('Không thể lưu file: $e');
+          final result = await saveDocumentLocally(SaveDocumentLocallyParams(url: urlDoc, fileName: fileName));
+          result.fold(
+                  (failure) => {
+                emit(DocumentReaderError(failure.message))
+              },
+                  (newFile) => file = newFile
+          );
+          // Kiểm tra file đã lưu thành công chưa
+          if (!file.existsSync() || await file.length() == 0) {
+            print("luu file thanh công");
           }
+
         } catch (e) {
           print('Error downloading file: $e');
-          if (e is Failure) {
-            throw e;
-          } else {
-            throw ServerException();
-          }
         }
       }
       emit(DocumentReaderLoaded(document: document, file: file));

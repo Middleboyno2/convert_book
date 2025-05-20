@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doantotnghiep/core/utils/firebase_storage_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../core/error/exceptions.dart';
 import '../../../core/utils/enums.dart';
 import '../../models/user_model.dart';
+import 'package:path/path.dart' as path;
 
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges;
@@ -15,20 +21,24 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> signInWithApple();
   Future<void> signOut();
   Future<void> sendPasswordResetEmail(String email);
+  Future<void> upLoadProfileImage(File file);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FirebaseFirestore _firestore;
+  final FirebaseStorageHelper _firebaseStorageHelper;
 
   AuthRemoteDataSourceImpl({
     required FirebaseAuth firebaseAuth,
     required GoogleSignIn googleSignIn,
     required FirebaseFirestore firestore,
+    required FirebaseStorage storage
   })  : _firebaseAuth = firebaseAuth,
         _googleSignIn = googleSignIn,
-        _firestore = firestore;
+        _firestore = firestore,
+        _firebaseStorageHelper = FirebaseStorageHelper(storage: storage, auth: firebaseAuth);
 
   @override
   Stream<UserModel?> get authStateChanges {
@@ -52,26 +62,31 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     });
   }
 
+  Future<void> saveLocalStorage(String key, String value) async{
+    // luu trong local storage SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
   @override
   Future<UserModel?> getCurrentUser() async {
     try {
       final user = _firebaseAuth.currentUser;
-      if (user != null) {
-        // Xác định provider
-        Provider provider = Provider.email;
-        if (user.providerData.isEmpty) {
-          String providerId = user.providerData[0].providerId;
-          if (providerId == 'google.com') {
-            provider = Provider.google;
-          } else if (providerId == 'apple.com') {
-            provider = Provider.apple;
-          }else {
-            provider = Provider.anonymous;
-          }
+      //await saveLocalStorage('user', user!.uid ??  '');
+      // Xác định provider
+      Provider provider = Provider.email;
+      if (user!.providerData.isEmpty) {
+        String providerId = user.providerData[0].providerId;
+        if (providerId == 'google.com') {
+          provider = Provider.google;
+        } else if (providerId == 'apple.com') {
+          provider = Provider.apple;
+        }else {
+          provider = Provider.anonymous;
         }
-        return UserModel.fromFirebaseUser(user, provider);
       }
-      return null;
+      return UserModel.fromFirebaseUser(user, provider);
+          return null;
     } catch (e) {
       throw AuthException('Lỗi khi lấy thông tin người dùng hiện tại: ${e.toString()}');
     }
@@ -84,6 +99,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
+      //await saveLocalStorage('user', result.user?.uid ??  '');
       return UserModel.fromFirebaseUser(result.user!, Provider.email);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -110,7 +126,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
+      // await saveLocalStorage('user', result.user?.uid ??  '');
       final String? uid = result.user?.uid;
+      await result.user?.updateDisplayName(name);
       // Tạo bản ghi tài liệu trong Firestore
       final docData = {
         'id': uid,
@@ -160,6 +178,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       // Sign in to Firebase with the credential
       final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final String? uid = userCredential.user?.uid;
+      // await saveLocalStorage('user', uid ??  '');
+      // Tạo bản ghi tài liệu trong Firestore
+      final docData = {
+        'id': uid,
+        'email': userCredential.user?.email,
+        'displayName': userCredential.user?.displayName,
+        'phoneNumber': userCredential.user?.phoneNumber,
+        'photoUrl': userCredential.user?.photoURL,
+        'provider': Provider.google.name,
+      };
+      await _firestore.collection('users').add(docData);
 
       return UserModel.fromFirebaseUser(userCredential.user!, Provider.google);
     } on FirebaseAuthException catch (e) {
@@ -192,6 +222,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Đăng nhập vào Firebase
       final userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
 
+      final String? uid = userCredential.user?.uid;
       // Cập nhật displayName nếu chưa có (Apple chỉ trả về tên trong lần đăng nhập đầu tiên)
       if (userCredential.user != null &&
           userCredential.user!.displayName == null &&
@@ -200,6 +231,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             '${appleCredential.givenName} ${appleCredential.familyName}'
         );
       }
+      // Tạo bản ghi tài liệu trong Firestore
+      final docData = {
+        'id': uid,
+        'email': userCredential.user?.email,
+        'displayName': userCredential.user?.displayName,
+        'phoneNumber': userCredential.user?.phoneNumber,
+        'photoUrl': userCredential.user?.photoURL,
+        'provider': Provider.google.name,
+      };
+      await _firestore.collection('users').add(docData);
       return UserModel.fromFirebaseUser(userCredential.user!, Provider.apple);
     } on FirebaseAuthException catch (e) {
       throw AuthException('Lỗi đăng nhập Apple: ${e.message}');
@@ -215,6 +256,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         _firebaseAuth.signOut(),
         _googleSignIn.signOut(),
       ]);
+      // await saveLocalStorage('user', '');
     } catch (e) {
       throw AuthException('Lỗi đăng xuất: ${e.toString()}');
     }
@@ -235,6 +277,43 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } catch (e) {
       throw AuthException('Lỗi khi gửi email đặt lại mật khẩu: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> upLoadProfileImage(File file) async{
+    try{
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw AuthException('Người dùng chưa đăng nhập');
+      }
+      final imagePath = await _firebaseStorageHelper.uploadImageCover(file);
+      try {
+        // Cập nhật photoURL trong Firebase Auth
+        await user.updatePhotoURL(imagePath);
+
+        // Tìm document của user trong Firestore
+        final querySnapshot = await _firestore.collection('users')
+            .where('id', isEqualTo: user.uid)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Nếu tìm thấy, cập nhật
+          await querySnapshot.docs.first.reference.update({'photoUrl': imagePath});
+        } else {
+          print('Không tìm thấy document người dùng trong Firestore');
+        }
+
+        // Reload user để đảm bảo thông tin mới nhất
+        await user.reload();
+        print('Đã cập nhật thành công cả Auth và Firestore');
+      } catch (e) {
+        print('Lỗi khi cập nhật thông tin: $e');
+        throw AuthException('Lỗi khi cập nhật thông tin: $e');
+      }
+    }catch(e){
+      throw AuthException('loi tai anh len');
     }
   }
 }

@@ -116,7 +116,6 @@ class _LibraryPageState extends State<LibraryPage> {
             if (_isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-
             // Hiển thị lỗi nếu có
             if (_errorMessage != null) {
               return Center(

@@ -1,5 +1,3 @@
-// lib/core/utils/firebase_storage_helper.dart
-
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,7 +35,7 @@ class FirebaseStorageHelper {
       final storageRef = _storage.ref().child('documents/${user.uid}/$fileName');
 
       // Log reference path for debugging
-      debugPrint('Uploading to path: documents/${user.uid}/$fileName');
+      print('Uploading to path: documents/${user.uid}/$fileName');
 
       // Metadata for the file
       final metadata = SettableMetadata(
@@ -67,6 +65,41 @@ class FirebaseStorageHelper {
       return storagePath;
     } catch (e) {
       debugPrint('Error uploading document: $e');
+      rethrow;
+    }
+  }
+
+  Future<String> uploadImageCover(File file) async {
+    try{
+      final user = _auth.currentUser;
+      if(user == null){
+        throw Exception('User not authenticated');
+      }
+      final uuid = const Uuid().v4();
+      // Get file extension
+      final fileExtension = path.extension(file.path);
+      // Create a reference with a specific path
+      final fileName = '$uuid$fileExtension';
+      final storageRef = _storage.ref().child('images/${user.uid}/$fileName');
+
+      // Metadata: định dạng ảnh + metadata tùy chọn
+      final metadata = SettableMetadata(
+        contentType: _getContentType(fileExtension), // ví dụ: image/jpeg
+        customMetadata: {
+          'userId': user.uid,
+          'uploadedAt': DateTime.now().toIso8601String(),
+        },
+      );
+      final uploadTask = storageRef.putFile(file, metadata);
+      final snapshot = await uploadTask;
+
+      // Lấy đường dẫn URL tải xuống
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      debugPrint('Upload thành công. URL: $downloadUrl');
+
+      return downloadUrl;
+    }catch(e){
+      debugPrint('Error uploading image: $e');
       rethrow;
     }
   }
@@ -110,6 +143,14 @@ class FirebaseStorageHelper {
   /// Lấy content type dựa trên phần mở rộng của file
   String _getContentType(String extension) {
     switch (extension.toLowerCase()) {
+      case '.jpg':
+        return 'image/jpg';
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.gif':
+        return 'image/gif';
       case '.pdf':
         return 'application/pdf';
       case '.epub':

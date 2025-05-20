@@ -7,7 +7,6 @@ abstract class AuthState extends Equatable{
 
   const AuthState();
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -25,11 +24,12 @@ class AuthSendEmailLoading extends AuthState {}
 
 class AuthSignOutLoading extends AuthState {}
 
+class UploadLoading extends AuthState{}
+
 class AuthAuthenticated extends AuthState {
   final UserEntity user;
 
   const AuthAuthenticated(this.user);
-
   @override
   List<Object> get props => [user];
 }
@@ -45,6 +45,16 @@ class AuthFailureState extends AuthState {
   List<Object> get props => [failure];
 }
 
+class UploadImageCompleted extends AuthState{}
+
+class UploadProfileImageError extends AuthState{
+  final Failure failure;
+
+  const UploadProfileImageError(this.failure);
+
+  @override
+  List<Object> get props => [failure];
+}
 
 class AuthPasswordResetEmailSent extends AuthState {
   final String email;

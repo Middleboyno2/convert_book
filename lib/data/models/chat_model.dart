@@ -2,24 +2,15 @@ import '../../domain/entities/chat_entity.dart';
 
 class ChatRoomModel extends ChatRoomEntity {
   const ChatRoomModel({
-    required String id,
-    required String name,
-    String? description,
-    required DateTime createdAt,
-    String? photoUrl,
-    required List<String> participantIds,
-    required bool isPublic,
-    MessageModel? lastMessage,
-  }) : super(
-    id: id,
-    name: name,
-    description: description,
-    createdAt: createdAt,
-    photoUrl: photoUrl,
-    participantIds: participantIds,
-    isPublic: isPublic,
-    lastMessage: lastMessage,
-  );
+    required super.id,
+    required super.name,
+    super.description,
+    required super.createdAt,
+    super.photoUrl,
+    required super.participantIds,
+    required super.isPublic,
+    MessageModel? super.lastMessage,
+  });
 
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) {
     // Parse participant IDs from Firebase (handles both Map and List formats)

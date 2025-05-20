@@ -27,13 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController phone = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController confirm = TextEditingController();
-  bool obscure = true;
-  // change icon state
-  void changeObscure(){
-    setState(() {
-      obscure = !obscure;
-    });
-  }
+
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
@@ -116,25 +111,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // password
                 CustomTextFormField(
                   controller: password,
-                  obscureText: obscure,
                   textInput: TextInputType.visiblePassword,
                   suffixIcon: true,
-                  onPressedSuffix: changeObscure,
                   labelText: appLocalization.translate('register.password'),
                   validator: _validatePassword,
                 ),
                 // confirm password
                 CustomTextFormField(
                   controller: confirm,
-                  obscureText: obscure,
                   textInput: TextInputType.visiblePassword,
                   suffixIcon: true,
-                  onPressedSuffix: changeObscure,
                   labelText: appLocalization.translate('register.confirm'),
-
                 ),
-
-                // submit
                 // submit
                 BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
@@ -176,6 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
                       return Column(
+                        spacing: 10,
                         children: [
                           //google
                           CustomButtonAuth(
@@ -193,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             background: Kolors.kGrayLight,
                             // khi bam nut thi xuất hiện indicator
                             isLoading: state is AuthGoogleLoading ? true: false,
-                            isSubmit: state is AuthAppleLoading ? false: true,
+                            isSubmit: state is AuthGoogleLoading ? false: true,
                           ),
 
                           //apple
@@ -210,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               width: 30,
                             ),
                             background: Kolors.kDark,
-                            isLoading: state is AuthGoogleLoading ? true: false,
+                            isLoading: state is AuthAppleLoading ? true: false,
                             isSubmit: state is AuthAppleLoading ? false: true,
                           ),
                         ],

@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doantotnghiep/domain/usecases/document/delete_document_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/get_local_document_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/is_document_cached_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/document/save_document_locally_usecase.dart';
 import 'package:doantotnghiep/domain/usecases/document/update_document_category_usecase.dart';
 import 'package:doantotnghiep/domain/usecases/document/update_document_cover_usecase.dart';
 import 'package:doantotnghiep/domain/usecases/document/update_reading_progress_usecase.dart';
+import 'package:doantotnghiep/domain/usecases/profile/upload_profile_image_usecase.dart';
 import 'package:doantotnghiep/presentation/bloc/auth/auth_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/chat_message/chat_message_bloc.dart';
 import 'package:doantotnghiep/presentation/bloc/chat_room/chat_room_bloc.dart';
@@ -72,6 +76,7 @@ Future<void> init() async {
       signInWithApple: sl(),
       signOut: sl(),
       sendPasswordResetEmail: sl(),
+      upLoadProfileImage: sl(),
       authRepository: sl(),
     ),
   );
@@ -93,7 +98,9 @@ Future<void> init() async {
   sl.registerFactory(
         () => DocumentReaderBloc(
       getDownloadUrl: sl(),
-      localDataSource: sl(),
+      getLocalDocument: sl(),
+      isDocumentCached: sl(),
+      saveDocumentLocally: sl(),
     ),
   );
 
@@ -130,6 +137,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignInWithAppleUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton(() => SendPasswordResetEmailUseCase(sl()));
+  sl.registerLazySingleton(() => UploadProfileImageUseCase(sl()));
 
   // document
   sl.registerLazySingleton(() => GetDocumentsUseCase(sl()));
@@ -140,6 +148,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateDocumentCategoryUseCase(sl()));
   sl.registerLazySingleton(() => UpdateReadingProgressUseCase(sl()));
   sl.registerLazySingleton(() => UpdateDocumentCoverUseCase(sl()));
+  sl.registerLazySingleton(() => GetLocalDocumentUseCase(sl()));
+  sl.registerLazySingleton(() => IsDocumentCachedUseCase(sl()));
+  sl.registerLazySingleton(() => SaveDocumentLocallyUseCase(sl()));
 
   // chat
   sl.registerLazySingleton(() => GetChatRoomsUseCase(sl()));
@@ -181,6 +192,7 @@ Future<void> init() async {
       firebaseAuth: sl(),
       googleSignIn: sl(),
       firestore: sl(),
+      storage: sl(),
     ),
   );
 
@@ -193,9 +205,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<DocumentLocalDataSource>(
-        () => DocumentLocalDataSourceImpl(
-      getDirectory: () async => await getApplicationDocumentsDirectory(),
-    ),
+        () => DocumentLocalDataSourceImpl(),
   );
 
   sl.registerLazySingleton<ChatRemoteDataSource>(

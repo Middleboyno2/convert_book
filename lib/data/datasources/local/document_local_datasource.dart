@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../core/error/exceptions.dart';
-import 'package:http/http.dart' as http;
 
 abstract class DocumentLocalDataSource {
   Future<File> saveDocumentLocally(String url, String fileName);
@@ -13,14 +12,10 @@ abstract class DocumentLocalDataSource {
 }
 
 class DocumentLocalDataSourceImpl implements DocumentLocalDataSource {
-  final Future<Directory> Function() getDirectory;
-
-
-  DocumentLocalDataSourceImpl({
-    required this.getDirectory,
-  });
-
-  // lib/data/datasources/local/document_local_datasource.dart
+  // final Future<Directory> Function() getDirectory;
+  // DocumentLocalDataSourceImpl({
+  //   required this.getDirectory,
+  // });
 
   @override
   Future<bool> isDocumentCached(String fileName) async {
@@ -44,21 +39,18 @@ class DocumentLocalDataSourceImpl implements DocumentLocalDataSource {
       if (file.existsSync()) {
         await file.delete();
       }
-
       // Tạo thư mục nếu chưa tồn tại
       if (!directory.existsSync()) {
         await directory.create(recursive: true);
       }
-
       // Tải file từ URL
       final httpClient = HttpClient();
       final request = await httpClient.getUrl(Uri.parse(url));
       final response = await request.close();
 
       if (response.statusCode != 200) {
-        throw CacheException('Không thể tải file từ server: ${response.statusCode}');
+        throw CacheException('Không thể tải file từ firebase: ${response.statusCode}');
       }
-
       // Lưu file
       final sink = file.openWrite();
       await response.pipe(sink);

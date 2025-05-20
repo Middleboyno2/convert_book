@@ -5,13 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/localization/app_localizations.dart';
-import '../bloc/auth/auth_bloc.dart';
-import '../bloc/auth/auth_event.dart';
-import '../bloc/auth/auth_state.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_toast/CustomToast.dart';
-import '../widgets/setting/language_dropdown.dart';
+import '../../../core/constants/resource.dart';
+import '../../../core/localization/app_localizations.dart';
+import '../../bloc/auth/auth_bloc.dart';
+import '../../bloc/auth/auth_event.dart';
+import '../../bloc/auth/auth_state.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_toast/CustomToast.dart';
+import '../../widgets/setting/language_dropdown.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -21,6 +22,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? _uid;
+  String? _coverUrl;
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+  void _loadUser(){
+    context.read<AuthBloc>().add(AuthCheckRequested());
+  }
   void _submit() {
     context.read<AuthBloc>().add(
       AuthSignOutRequested(),
@@ -28,14 +39,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
+    final applocalization = AppLocalizations.of(context);
+    return BlocListener<AuthBloc, AuthState>(
       listener: (BuildContext context, state) {
+
         if(state is AuthUnauthenticated){
           Toast.showCustomToast(
             context,
             AppLocalizations.of(context).translate('sign_out')
           );
           context.push('/auth');
+        }else if(state is AuthAuthenticated){
+          setState(() {
+            _uid = state.user.id;
+            _coverUrl = state.user.photoUrl;
+          });
         }
       },
       child: Scaffold(
@@ -44,28 +62,29 @@ class _ProfilePageState extends State<ProfilePage> {
           width: ScreenUtil().screenWidth,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
-              AvatarProfile(avatarUrl: '', id: 'dfasdfsdfadsfasd',),
+              AvatarProfile(avatarUrl: _coverUrl ?? '', id: _uid ?? '',),
               SizedBox(height: 50,),
               ProfileItem(
-                icon: Icons.account_circle_outlined,
-                title: 'account',
-                onTap: (){}
+                name: R.ASSETS_ICON_INSTRUCTION,
+                title: applocalization.translate('profile.instruction_manual'),
+                onTap: (){
+                  context.push('/manual');
+                }
               ),
               ProfileItem(
-                  icon: Icons.settings,
-                  title: 'setting',
-                  onTap: (){
-                    context.push('/setting');
-                  }
+                name: R.ASSETS_ICON_SETTING,
+                title: applocalization.translate('profile.setting'),
+                onTap: (){
+                  context.push('/setting');
+                }
               ),
               ProfileItem(
-                  icon: Icons.support_agent_outlined,
-                  title: 'support',
-                  onTap: (){
-                    context.push('/support');
-                  }
+                name: R.ASSETS_ICON_QUESTION,
+                title: applocalization.translate('profile.support'),
+                onTap: (){
+                  context.push('/support');
+                }
               ),
               const LanguageDropdown(),
               const SizedBox(height: 8),
@@ -77,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     isLoading: state is AuthSignOutLoading ? true: false,
                     isSubmit: state is AuthSignOutLoading ? false: true,
-                    text: AppLocalizations.of(context).translate('forget.submit'),
+                    text: applocalization.translate('profile.sign_out'),
                   );
                 }
               ),

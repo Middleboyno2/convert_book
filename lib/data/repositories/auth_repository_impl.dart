@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
@@ -25,7 +27,6 @@ class AuthRepositoryImpl implements AuthRepository {
       if (!isConnected) {
         return Left(NetworkFailure());
       }
-
       final user = await remoteDataSource.getCurrentUser();
       if (user == null) {
         return Left(UserNotFoundFailure());
@@ -179,6 +180,20 @@ class AuthRepositoryImpl implements AuthRepository {
       } else {
         return Left(AuthFailure(e.message));
       }
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> upLoadProfileImage(File file) async{
+    try{
+      final isConnected = await networkInfo.isConnected;
+      if(!isConnected){
+        return Left(NetworkFailure());
+      }
+      await remoteDataSource.upLoadProfileImage(file);
+      return Right(null);
+    }catch(e){
+      return Left(AuthFailure(e.toString()));
     }
   }
 }

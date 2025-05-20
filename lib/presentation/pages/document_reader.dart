@@ -31,16 +31,15 @@ class DocumentReaderPage extends StatefulWidget {
 }
 
 class _DocumentReaderPageState extends State<DocumentReaderPage> {
-  EpubController? _epubController;
+  // EpubController? _epubController;
   int? _totalPdfPages;
   int _currentPdfPage = 0;
   bool _isLoading = true;
   DocumentEntity? _document;
   late DocumentBloc _documentBloc;
-  bool _isOnline = true;
-  bool isHide = true;
+  // bool isHide = true;
 
-  // Để theo dõi thời gian giữa các lần cập nhật tiến độ
+  // theo dõi thời gian giữa các lần cập nhật tiến độ
   DateTime? _lastProgressUpdate;
   // Khoảng thời gian tối thiểu giữa các lần cập nhật (20 giây)
   final Duration _progressUpdateInterval = Duration(seconds: 20);
@@ -53,7 +52,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   void initState() {
     super.initState();
     _documentBloc = context.read<DocumentBloc>();
-    _setupConnectivity();
     _loadDocument();
   }
 
@@ -64,29 +62,12 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
     _documentBloc = context.read<DocumentBloc>();
   }
 
-  Future<void> _setupConnectivity() async {
-    final Connectivity connectivity = Connectivity();
-    final result = await connectivity.checkConnectivity();
-    _updateConnectionStatus(result);
-
-    _connectivitySubscription =
-        connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-  }
-
-  void _updateConnectionStatus(List<ConnectivityResult> result) {
-    setState(() {
-      _isOnline = result != ConnectivityResult.none;
-    });
-  }
-
   @override
   void dispose() {
     // Lưu tiến độ đọc trước khi dispose
     //_saveReadingProgressSafely();
-
     // Giải phóng tài nguyên
     //_epubController?.dispose();
-    //_connectivitySubscription?.cancel();
     super.dispose();
   }
   void _loadDocument() {
@@ -96,7 +77,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
     if (_document == null) return;
     // Tải file từ Firebase Storage hoặc từ bộ nhớ cục bộ tùy thuộc vào kết nối
     context.read<DocumentReaderBloc>().add(
-      LoadDocumentEvent(_document!, isOnline: _isOnline),
+      LoadDocumentEvent(_document!),
     );
   }
 
@@ -110,49 +91,30 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
         if (_document!.type == DocumentType.pdf) {
           // xử lý sau
         } else if (_document!.type == DocumentType.epub) {
-          if (_epubController != null) {
-            try {
-              final cfi = _epubController!.generateEpubCfi();
-              if (cfi != null) {
-                currentPosition = cfi;
-              }
-            } catch (e) {
-              print('Error getting EPUB progress: $e');
-            }
-          }
-        }
 
-        // Lưu tiến độ dựa trên trạng thái kết nối
-        if (_isOnline) {
-          // Lưu tiến độ lên Firebase
-          _documentBloc.add(
-            UpdateReadingProgressEvent(
-              id: _document!.id,
-              progress: progress,
-              lastPage: currentPage,
-              lastPosition: currentPosition,
-            ),
-          );
-          _saveReadingProgressToLocal(
-              _document!.id,
-              progress,
-              currentPage,
-              currentPosition
-          );
-        } else {
-          // Lưu tiến độ vào local storage
-          _saveReadingProgressToLocal(
-              _document!.id,
-              progress,
-              currentPage,
-              currentPosition
-          );
         }
+        // Lưu tiến độ lên Firebase
+        _documentBloc.add(
+          UpdateReadingProgressEvent(
+            id: _document!.id,
+            progress: progress,
+            lastPage: currentPage,
+            lastPosition: currentPosition,
+          ),
+        );
+        _saveReadingProgressToLocal(
+            _document!.id,
+            progress,
+            currentPage,
+            currentPosition
+        );
+
       }
     } catch (e) {
       print('Error in _saveReadingProgressSafely: $e');
     }
   }
+
 
 // Phương thức lưu tiến độ vào local storage
   void _saveReadingProgressToLocal(
@@ -336,7 +298,7 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
   }
 
   Widget _buildTableOfContentsDrawer() {
-    if (_document?.type != DocumentType.epub || _epubController == null) {
+    if (_document?.type != DocumentType.epub) {
       return Drawer(
         child: Center(
           child: Text('Đang tải mục lục...'),
@@ -359,11 +321,11 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
               ),
             ),
             Divider(),
-            Expanded(
-              child: EpubViewTableOfContents(
-                controller: _epubController!,
-              ),
-            ),
+            // Expanded(
+            //   child: EpubViewTableOfContents(
+            //     controller: _epubController!,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -393,18 +355,6 @@ class _DocumentReaderPageState extends State<DocumentReaderPage> {
               SizedBox(height: 8),
               Text('Lần đọc cuối: ${_formatDate(_document!.lastReadTime!)}'),
             ],
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  _isOnline ? Icons.cloud_done : Icons.cloud_off,
-                  color: _isOnline ? Colors.green : Colors.grey,
-                  size: 16,
-                ),
-                SizedBox(width: 4),
-                Text(_isOnline ? 'Đang đọc trực tuyến' : 'Đang đọc ngoại tuyến'),
-              ],
-            ),
           ],
         ),
         actions: [

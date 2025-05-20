@@ -72,5 +72,12 @@
     	</dict>
     </array>
     <!-- End of the Google Sign-in Section -->
+
+    <!--Add picker from gallery and camera-->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>pick image from gallery</string>
+    <key>NSCameraUsageDescription</key>
+    <string>pick image from camera</string>
+    <!--end picker-->
 </dict>
 </plist>

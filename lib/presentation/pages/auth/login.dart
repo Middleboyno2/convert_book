@@ -27,13 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-  bool obscure = true;
-  // change icon state
-  void changeObscure(){
-    setState(() {
-      obscure = !obscure;
-    });
-  }
 
   void nextPageRegister(){
     widget.pageController.animateToPage(
@@ -122,7 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   appLocalization.translate('auth.title'),
                   style: Theme.of(context).textTheme.displayLarge,
                 ),
-
                 // email
                 CustomTextFormField(
                   controller: email,
@@ -130,14 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: appLocalization.translate('auth.email'),
                   validator: _validateEmail,
                 ),
-
                 // password
                 CustomTextFormField(
                   controller: password,
-                  obscureText: obscure,
                   textInput: TextInputType.visiblePassword,
                   suffixIcon: true,
-                  onPressedSuffix: changeObscure,
                   labelText: appLocalization.translate('auth.password'),
                   validator: _validatePassword,
                 ),
@@ -213,8 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           background: Kolors.kGrayLight,
                           // khi bam nut thi xuất hiện indicator
-                          isLoading: state is AuthLoading ? true: false,
-                          isSubmit: state is AuthLoading ? false: true,
+                          isLoading: state is AuthGoogleLoading ? true: false,
+                          isSubmit: state is AuthGoogleLoading ? false: true,
                         ),
 
                         //apple
@@ -231,8 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 30,
                           ),
                           background: Kolors.kDark,
-                          isLoading: state is AuthLoading ? true: false,
-                          isSubmit: state is AuthLoading ? false: true,
+                          isLoading: state is AuthAppleLoading ? true: false,
+                          isSubmit: state is AuthAppleLoading ? false: true,
                         ),
                       ],
                     );

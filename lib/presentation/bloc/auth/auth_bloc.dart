@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:doantotnghiep/domain/usecases/profile/upload_profile_image_usecase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/usecase/usecase.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -21,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInWithAppleUseCase signInWithApple;
   final SignOutUseCase signOut;
   final SendPasswordResetEmailUseCase sendPasswordResetEmail;
+  final UploadProfileImageUseCase upLoadProfileImage;
   final AuthRepository authRepository;
 
   StreamSubscription<UserEntity?>? _authStateSubscription;
@@ -34,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.signOut,
     required this.sendPasswordResetEmail,
     required this.authRepository,
+    required this.upLoadProfileImage
   }) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthSignInWithEmailPasswordRequested>(_onAuthSignInWithEmailPasswordRequested);
@@ -42,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignInWithAppleRequested>(_onAuthSignInWithAppleRequested);
     on<AuthSignOutRequested>(_onAuthSignOutRequested);
     on<AuthSendPasswordResetEmailRequested>(_onAuthSendPasswordResetEmailRequested);
+    on<UploadProfileImageRequested>(_onUploadProfileImageRequested);
 
     // Lắng nghe sự thay đổi trạng thái xác thực từ Firebase
     _authStateSubscription = authRepository.authStateChanges.listen((user) {
@@ -57,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ) async {
     emit(AuthLoading());
     final result = await getCurrentUser(NoParams());
+    print(result);
     result.fold(
           (failure) => emit(AuthUnauthenticated()),
           (user) => emit(AuthAuthenticated(user)),
@@ -156,8 +162,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     result.fold(
-          (failure) => emit(AuthFailureState(failure)),
-          (_) => emit(AuthPasswordResetEmailSent(event.email)),
+      (failure) => emit(AuthFailureState(failure)),
+      (_) => emit(AuthPasswordResetEmailSent(event.email)),
+    );
+  }
+
+  Future<void> _onUploadProfileImageRequested(
+      UploadProfileImageRequested event,
+      Emitter<AuthState> emit
+      ) async {
+    print("Starting upload...");
+    emit(UploadLoading());
+
+    final result = await upLoadProfileImage(
+        UpLoadProfileImageParams(file: event.file)
+    );
+
+    result.fold(
+      (failure) {
+        print("Upload failed: ${failure.message}");
+        emit(UploadProfileImageError(failure));
+      },
+      (_) {
+        print("Upload completed, emitting UploadImageCompleted");
+        emit(UploadImageCompleted());
+        Future.delayed(Duration(milliseconds: 100), () {
+          add(AuthCheckRequested());
+        });
+      }
     );
   }
 

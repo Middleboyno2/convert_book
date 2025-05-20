@@ -92,6 +92,7 @@ flutter:
     - assets/images/language/
     - assets/images/empty/
     - assets/images/auth/
+    - assets/icon/
     - lib/core/localization/l10n/app_en.json
     - lib/core/localization/l10n/app_vi.json
   #   - images/a_dot_ham.jpeg
