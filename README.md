@@ -15,3 +15,6 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 # convert_book
+
+# design ux/ui:
+https://www.figma.com/design/8nliCGnqEVOJtHeNG86ofj/design_app_reader?m=auto&t=kCQPzASuIsBQq5Q8-1
